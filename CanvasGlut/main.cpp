@@ -204,7 +204,7 @@ int main(void)
    //b = new Bola();
    //r = new Relogio();
    //bt = new Botao(200, 400, 140, 50, "Sou um botao");
-    teste = new Figuras(200, 400, 50, 100, 4);
+    //teste = new Figuras(200, 400, 50, 100, 4);
    CV::init(&screenWidth, &screenHeight, "Demo Robson");
    CV::run();
 }
