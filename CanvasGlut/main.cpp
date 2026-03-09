@@ -34,7 +34,7 @@
 //largura e altura inicial da tela . Alteram com o redimensionamento de tela.
 int screenWidth = 500, screenHeight = 500;
 
-
+Figuras* retangulo;
 Bola    *b = NULL;
 Relogio *r = NULL;
 Botao   *bt = NULL; //se a aplicacao tiver varios botoes, sugiro implementar um manager de botoes.
@@ -87,29 +87,7 @@ void DrawMouseScreenCoords()
 
 int cor = 4;
 int xRect = 50, yRect = 50, width = 100, height = 200;
-bool acertou = false;
-
-bool colisaoRect() {
-    CV::color(cor);
-    if (acertou) {
-        xRect = mouseX;
-        yRect = mouseY;
-    }
-
-    CV::rectFill(xRect, yRect, xRect + width, yRect + height );
-    if (mouseX >= xRect && mouseX <= xRect + width 
-        && mouseY>= yRect && mouseY <= yRect + height) {
-        //printf("\nColidiu com retangulo");
-        cor = 13;
-        return true;
-    }
-    else {
-        cor = 4;
-        return false;
-    }
-}
-
-
+bool press = false;
 //funcao chamada continuamente. Deve-se controlar o que desenhar por meio de variaveis globais
 //Todos os comandos para desenho na canvas devem ser chamados dentro da render().
 //Deve-se manter essa função com poucas linhas de codigo.
@@ -117,8 +95,12 @@ void render()
 {
    
    CV::clear(0, 0, 0);
+   retangulo->desenhaRect();
+   retangulo->colisaoRect(mouseX,mouseY, press);
+
+
    //arrastaRect();
-   colisaoRect();
+   //colisaoRect();
    //Codigo do professor
    /*//CV::rectFill(10, 10, 10, 10);
    float x[3] = {10, 130, 20};
@@ -174,37 +156,41 @@ void keyboardUp(int key)
 {
    printf("\nLiberou: %d" , key);
 }
+
+
+
+
+
+
 //funcao para tratamento de mouse: cliques, movimentos e arrastos
 /*button 0 -> esquerdo || 2 -> direito
-state = 0 -> botao pressionado || 1 -> solto 
+state = 0 -> botao pressionado || 1 -> solto
 -2 -> nada acontecendo*/
 void mouse(int button, int state, int wheel, int direction, int x, int y)
 {
    mouseX = x; //guarda as coordenadas do mouse para exibir dentro da render()
    mouseY = y;
 
-   printf("\nmouse %d %d %d %d %d %d", button, state, wheel, direction,  x, y);
+   //printf("\nmouse %d %d %d %d %d %d", button, state, wheel, direction,  x, y);
 
-   if( state == 0 && colisaoRect()) //clicou
-   {
-       if( bt->Colidiu(x, y) )
-       {
-           //printf("\nClicou no botao\n");
-       }
-       acertou = true;
+   if (state == 0) {
+       press = true;
+       retangulo->setDist(mouseX,mouseY);
    }
    if (state == 1) {
-       acertou = false;
+       press = false;
    }
+
+
 }
 
-Figuras teste;
+
 int main(void)
 {
    //b = new Bola();
    //r = new Relogio();
    //bt = new Botao(200, 400, 140, 50, "Sou um botao");
-    //teste = new Figuras(200, 400, 50, 100, 4);
+   retangulo = new Figuras(50, 100, 50, 100, 4);
    CV::init(&screenWidth, &screenHeight, "Demo Robson");
    CV::run();
 }
