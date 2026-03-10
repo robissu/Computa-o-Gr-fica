@@ -40,6 +40,9 @@ Relogio *r = NULL;
 Botao   *bt = NULL; //se a aplicacao tiver varios botoes, sugiro implementar um manager de botoes.
 int opcao  = 50;//variavel global para selecao do que sera exibido na canvas.
 int mouseX, mouseY; //variaveis globais do mouse para poder exibir dentro da render().
+bool pressMouse = false;
+bool pressTeclado = false;
+int direcaoTeclado = -1;
 
 void DesenhaSenoide()
 {
@@ -85,9 +88,7 @@ void DrawMouseScreenCoords()
 }
 
 
-int cor = 4;
-int xRect = 50, yRect = 50, width = 100, height = 200;
-bool press = false;
+
 //funcao chamada continuamente. Deve-se controlar o que desenhar por meio de variaveis globais
 //Todos os comandos para desenho na canvas devem ser chamados dentro da render().
 //Deve-se manter essa função com poucas linhas de codigo.
@@ -96,9 +97,13 @@ void render()
    
    CV::clear(0, 0, 0);
    retangulo->desenhaRect();
-   retangulo->colisaoRect(mouseX,mouseY, press);
+   retangulo->colisaoRect(mouseX,mouseY, pressMouse);
+   retangulo->drag(mouseX, mouseY);
+   if (pressTeclado) {
+       retangulo->mexer(direcaoTeclado);
+   }
 
-
+   
    //arrastaRect();
    //colisaoRect();
    //Codigo do professor
@@ -125,36 +130,55 @@ void render()
 }
 
 
-//funcao chamada toda vez que uma tecla for pressionada.
+//funcao chamada toda vez que uma tecla for pressMouseionada.
 void keyboard(int key)
 {
    printf("\nTecla: %d" , key);
+   pressTeclado = true;
    if( key < 200 )
    {
       opcao = key;
    }
 
-   switch(key)
-   {
-      case 27:
-	     exit(0);
-	  break;
+   if (pressTeclado) {
+       switch (key)
+       {
+       case 27:
+           exit(0);
+           break;
 
-	  //seta para a esquerda
-      case 200:
-         b->move(-10);
-	  break;
+           //seta para a esquerda
+       case 200:
+           direcaoTeclado = 0;
+           break;
 
-	  //seta para a direita
-	  case 202:
-         b->move(10);
-	  break;
+           //cima
+       case 201:
+           direcaoTeclado = 1;
+           break;
+
+           //seta para a direita
+       case 202:
+           direcaoTeclado = 2;
+           break;
+
+           //baixo
+       case 203:
+           direcaoTeclado = 3;
+           break;
+       default:
+           direcaoTeclado = -1;
+           break;
+       }
+       
    }
 }
+
 //funcao chamada toda vez que uma tecla for liberada
 void keyboardUp(int key)
 {
    printf("\nLiberou: %d" , key);
+   pressTeclado = false;
 }
 
 
@@ -164,7 +188,7 @@ void keyboardUp(int key)
 
 //funcao para tratamento de mouse: cliques, movimentos e arrastos
 /*button 0 -> esquerdo || 2 -> direito
-state = 0 -> botao pressionado || 1 -> solto
+state = 0 -> botao pressMouseionado || 1 -> solto
 -2 -> nada acontecendo*/
 void mouse(int button, int state, int wheel, int direction, int x, int y)
 {
@@ -174,11 +198,11 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
    //printf("\nmouse %d %d %d %d %d %d", button, state, wheel, direction,  x, y);
 
    if (state == 0) {
-       press = true;
+       pressMouse = true;
        retangulo->setDist(mouseX,mouseY);
    }
    if (state == 1) {
-       press = false;
+       pressMouse = false;
    }
 
 

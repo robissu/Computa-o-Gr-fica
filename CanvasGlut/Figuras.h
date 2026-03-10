@@ -4,10 +4,10 @@
 #include "gl_canvas2d.h"
 
 class Figuras {
-    float x, y, width, height, raio, distX, distY;
+    float x, y, width, height, raio, distX, distY, vel;
     int cor;
-
-
+    bool arrastar;
+    
 public:
     Figuras(float x, float y, float width, float height, int cor){//retangulo
         this->x = x;
@@ -15,6 +15,8 @@ public:
         this->width = width;
         this->height = height;
         this->cor = cor;
+        this->arrastar = false;
+        this->vel = 5;
         //desenhaRect(this->x = x, this->y = y, this->width = width, this->height = height, this->cor = cor);
     }
     Figuras(float x, float y, float raio, int cor) {//circulo
@@ -22,6 +24,8 @@ public:
         this->y = y;
         this->raio = raio;
         this->cor = cor;
+        this->arrastar = false;
+        this->vel = 5;
         //desenhaCircle(this->x = x, this->y = y, this->raio = raio, this->cor = cor);
     }
 
@@ -51,15 +55,42 @@ public:
         distY = mouseY - y;
     }
 
-    void colisaoRect(int mouseX, int mouseY, bool pressionado) {
-        if (mouseX >= x && mouseX <= x + width
-            && mouseY >= y && mouseY <= y + height && pressionado) {
-            cor = 13;
+    void drag(int mouseX, int mouseY) {
+        if (arrastar) {
             x = mouseX - distX;
             y = mouseY - distY;
         }
+    }
+
+    void colisaoRect(int mouseX, int mouseY, bool pressionado) {
+        if (mouseX >= x && mouseX <= x + width
+            && mouseY >= y && mouseY <= y + height) {
+            cor = 13;
+            if (pressionado) {
+                arrastar = true;
+            }
+                
+        }
         else {
             cor = 4;
+        }
+        if (!pressionado) {
+            arrastar = false;
+        }
+    }
+
+    void mexer(int direcao) {
+        if (direcao == 0) {//esquerda
+            x -= vel;
+        }
+        else if (direcao == 1) {//cima
+            y += vel;
+        }
+        else if (direcao == 2) {//direita
+            x += vel;
+        }
+        else if (direcao == 3) {//baixo
+            y -= vel;
         }
     }
 };
