@@ -35,6 +35,7 @@
 int screenWidth = 500, screenHeight = 500;
 
 Figuras* retangulo;
+Figuras* circulo;
 Bola    *b = NULL;
 Relogio *r = NULL;
 Botao   *bt = NULL; //se a aplicacao tiver varios botoes, sugiro implementar um manager de botoes.
@@ -102,8 +103,12 @@ void render()
    if (pressTeclado) {
        retangulo->mexer(direcaoTeclado);
    }
-
-   
+   circulo->desenhaCircle();
+   circulo->colisaoCirc(mouseX, mouseY, pressMouse);
+   circulo->drag(mouseX, mouseY);
+   if (pressTeclado) {
+       circulo->mexer(direcaoTeclado);
+   }
    //arrastaRect();
    //colisaoRect();
    //Codigo do professor
@@ -200,6 +205,7 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
    if (state == 0) {
        pressMouse = true;
        retangulo->setDist(mouseX,mouseY);
+       circulo->setDist(mouseX, mouseY);
    }
    if (state == 1) {
        pressMouse = false;
@@ -215,6 +221,9 @@ int main(void)
    //r = new Relogio();
    //bt = new Botao(200, 400, 140, 50, "Sou um botao");
    retangulo = new Figuras(50, 100, 50, 100, 4);
+   circulo = new Figuras(250, 100, 30, 4);
+
+
    CV::init(&screenWidth, &screenHeight, "Demo Robson");
    CV::run();
 }

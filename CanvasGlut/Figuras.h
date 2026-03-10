@@ -6,7 +6,7 @@
 class Figuras {
     float x, y, width, height, raio, distX, distY, vel;
     int cor;
-    bool arrastar;
+    bool arrastar, selecao;
     
 public:
     Figuras(float x, float y, float width, float height, int cor){//retangulo
@@ -17,6 +17,7 @@ public:
         this->cor = cor;
         this->arrastar = false;
         this->vel = 5;
+        this->selecao = false;
         //desenhaRect(this->x = x, this->y = y, this->width = width, this->height = height, this->cor = cor);
     }
     Figuras(float x, float y, float raio, int cor) {//circulo
@@ -26,6 +27,7 @@ public:
         this->cor = cor;
         this->arrastar = false;
         this->vel = 5;
+        this->selecao = false;
         //desenhaCircle(this->x = x, this->y = y, this->raio = raio, this->cor = cor);
     }
 
@@ -62,14 +64,43 @@ public:
         }
     }
 
+    bool rectBorda(int mouseX, int mouseY) {
+        return (mouseX >= x && mouseX <= x + width
+            && mouseY >= y && mouseY <= y + height);
+    }
+
     void colisaoRect(int mouseX, int mouseY, bool pressionado) {
-        if (mouseX >= x && mouseX <= x + width
-            && mouseY >= y && mouseY <= y + height) {
+        if (rectBorda(mouseX, mouseY)) {
+            cor = 13;
+            if (pressionado) {
+                arrastar = true;
+                
+            }
+                
+        }
+        else {
+            cor = 4;
+            
+        }
+        if (!pressionado) {
+            arrastar = false;
+        }
+        
+    }
+
+    bool circBorda(int mouseX, int mouseY) {
+        float difX = mouseX - x;
+        float difY = mouseY - y;
+        float quad = (difX * difX) + (difY * difY);
+        return (quad <= (raio * raio));
+    }
+
+    void colisaoCirc(int mouseX, int mouseY, bool pressionado) {
+        if (circBorda(mouseX, mouseY)) {
             cor = 13;
             if (pressionado) {
                 arrastar = true;
             }
-                
         }
         else {
             cor = 4;
@@ -79,19 +110,25 @@ public:
         }
     }
 
+
+
+
     void mexer(int direcao) {
-        if (direcao == 0) {//esquerda
-            x -= vel;
+        if (selecao) {
+            if (direcao == 0) {//esquerda
+                x -= vel;
+            }
+            else if (direcao == 1) {//cima
+                y += vel;
+            }
+            else if (direcao == 2) {//direita
+                x += vel;
+            }
+            else if (direcao == 3) {//baixo
+                y -= vel;
+            }
         }
-        else if (direcao == 1) {//cima
-            y += vel;
-        }
-        else if (direcao == 2) {//direita
-            x += vel;
-        }
-        else if (direcao == 3) {//baixo
-            y -= vel;
-        }
+        
     }
 };
 
