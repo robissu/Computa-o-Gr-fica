@@ -30,6 +30,16 @@ public:
         this->selecao = false;
         //desenhaCircle(this->x = x, this->y = y, this->raio = raio, this->cor = cor);
     }
+    Figuras(float x, float y, float raio) {//circulo sem cor
+        this->x = x;
+        this->y = y;
+        this->raio = raio;
+        this->cor = cor;
+        this->arrastar = false;
+        this->vel = 5;
+        this->selecao = false;
+        //desenhaCircle(this->x = x, this->y = y, this->raio = raio, this->cor = cor);
+    }
 
     void desenhaRect() {
         CV::color(cor);
@@ -47,8 +57,8 @@ public:
         CV::circleFill(this->x, this->y, this->raio, 50);
     }
     void desenhaCircle(int cor) {
-        CV::color(cor);
-        CV::circleFill(this->x, this->y, this->raio, 50);
+        CV::color(0);
+        CV::circle(this->x, this->y, this->raio, 50);
     }
 
     void desenhaCircle(float x, float y, float raio, int cor) {

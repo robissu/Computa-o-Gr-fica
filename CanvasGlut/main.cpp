@@ -92,9 +92,8 @@ void DrawMouseScreenCoords()
 float sliderX = 30, sliderY = 250, sliderW = 30, sliderH = 10;
 Figuras* sliderChoice;
 void slider() {
-
     int idx;
-    //desenha paleta de cores predefinidas na Canvas2D. 
+    //desenha barra de cores
     for (idx = 0; idx < 14; idx++)
     {
         CV::color(idx);
@@ -102,6 +101,19 @@ void slider() {
     }
     sliderChoice->desenhaCircle(idx);
     sliderChoice->colisaoCirc(mouseX, mouseY, pressMouse);
+    sliderChoice->drag(mouseY);
+
+    //degrade fundo
+    Vector2 v1, v2;
+    for (float i = 0; i < 350; i++)
+    {
+        CV::color(i / 200, i / 200, i / 200);
+        v1.set(i + 100, 240);
+        v2.set(i + 200, 300);
+        CV::rectFill(v1,v2);
+    }
+
+
 }
 
 //funcao chamada continuamente. Deve-se controlar o que desenhar por meio de variaveis globais
@@ -221,6 +233,7 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
        pressMouse = true;
        retangulo->setDist(mouseX,mouseY);
        circulo->setDist(mouseX, mouseY);
+       sliderChoice->setDist(mouseX, mouseY);
    }
    if (state == 1) {
        pressMouse = false;
@@ -239,7 +252,7 @@ int main(void)
    //bt = new Botao(200, 400, 140, 50, "Sou um botao");
    retangulo = new Figuras(50, 100, 50, 100, 4);
    circulo = new Figuras(250, 100, 30, 4);
-   sliderChoice = new Figuras(45, 265, 20, 0);
+   sliderChoice = new Figuras(45, 265, 20);
 
    CV::init(&screenWidth, &screenHeight, "Demo Robson");
    CV::run();
