@@ -89,6 +89,20 @@ void DrawMouseScreenCoords()
 }
 
 
+float sliderX = 30, sliderY = 250, sliderW = 30, sliderH = 10;
+Figuras* sliderChoice;
+void slider() {
+
+    int idx;
+    //desenha paleta de cores predefinidas na Canvas2D. 
+    for (idx = 0; idx < 14; idx++)
+    {
+        CV::color(idx);
+        CV::rectFill(sliderX, sliderY + (sliderH * idx), sliderX + sliderW, sliderY + sliderH + (sliderH * idx));
+    }
+    sliderChoice->desenhaCircle(idx);
+    sliderChoice->colisaoCirc(mouseX, mouseY, pressMouse);
+}
 
 //funcao chamada continuamente. Deve-se controlar o que desenhar por meio de variaveis globais
 //Todos os comandos para desenho na canvas devem ser chamados dentro da render().
@@ -96,7 +110,7 @@ void DrawMouseScreenCoords()
 void render()
 {
    
-   CV::clear(0, 0, 0);
+   CV::clear(1, 1, 1);
    retangulo->desenhaRect();
    retangulo->colisaoRect(mouseX,mouseY, pressMouse);
    retangulo->drag(mouseX, mouseY);
@@ -109,6 +123,7 @@ void render()
    if (pressTeclado) {
        circulo->mexer(direcaoTeclado);
    }
+   slider();
    //arrastaRect();
    //colisaoRect();
    //Codigo do professor
@@ -224,7 +239,7 @@ int main(void)
    //bt = new Botao(200, 400, 140, 50, "Sou um botao");
    retangulo = new Figuras(50, 100, 50, 100, 4);
    circulo = new Figuras(250, 100, 30, 4);
-
+   sliderChoice = new Figuras(45, 265, 20, 0);
 
    CV::init(&screenWidth, &screenHeight, "Demo Robson");
    CV::run();

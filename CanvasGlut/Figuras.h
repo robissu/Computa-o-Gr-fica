@@ -46,6 +46,10 @@ public:
         CV::color(cor);
         CV::circleFill(this->x, this->y, this->raio, 50);
     }
+    void desenhaCircle(int cor) {
+        CV::color(cor);
+        CV::circleFill(this->x, this->y, this->raio, 50);
+    }
 
     void desenhaCircle(float x, float y, float raio, int cor) {
         CV::color(cor);
@@ -64,6 +68,12 @@ public:
         }
     }
 
+    void drag(int mouseY) {
+        if (arrastar) {
+            y = mouseY - distY;
+        }
+    }
+
     bool rectBorda(int mouseX, int mouseY) {
         return (mouseX >= x && mouseX <= x + width
             && mouseY >= y && mouseY <= y + height);
@@ -71,7 +81,7 @@ public:
 
     void colisaoRect(int mouseX, int mouseY, bool pressionado) {
         if (rectBorda(mouseX, mouseY)) {
-            cor = 13;
+            cor = 10;
             if (pressionado) {
                 arrastar = true;
                 
@@ -87,7 +97,7 @@ public:
         }
         if (selecao)
             cor = 3;
-        printf("\n TESTE SELECAO RETANGULO: %d", selecao);
+        //printf("\n TESTE SELECAO RETANGULO: %d", selecao);
     }
 
     bool circBorda(int mouseX, int mouseY) {
@@ -99,7 +109,7 @@ public:
 
     void colisaoCirc(int mouseX, int mouseY, bool pressionado) {
         if (circBorda(mouseX, mouseY)) {
-            cor = 13;
+            cor = 10;
            
             if (pressionado) {
                 arrastar = true;
@@ -113,7 +123,7 @@ public:
         }
         if (selecao)
             cor = 3;
-        printf("\n TESTE SELECAO CIRCLE: %d", selecao);
+        //printf("\n TESTE SELECAO CIRCLE: %d", selecao);
     }
 
 
