@@ -7,7 +7,7 @@ class Figuras {
     float x, y, width, height, raio, distX, distY, vel;
     int cor;
     bool arrastar, selecao;
-    
+   
 public:
     Figuras(float x, float y, float width, float height, int cor){//retangulo
         this->x = x;
@@ -41,29 +41,42 @@ public:
         //desenhaCircle(this->x = x, this->y = y, this->raio = raio, this->cor = cor);
     }
 
+    bool getArrast() {
+        return arrastar;
+    }
+
     void desenhaRect() {
+        if (selecao)
+            cor = 3;
         CV::color(cor);
         CV::rectFill(this->x,this->y,this->x+this->width,this->y+this->height);
         
     }
 
     void desenhaRect(float x, float y, float width, float height, int cor) {
+        if (selecao)
+            cor = 3;
         CV::color(cor);
         CV::rectFill(x, y, x+width, y+height);
     }
 
     void desenhaCircle() {
+        if (selecao)
+            cor = 3;
         CV::color(cor);
         CV::circleFill(this->x, this->y, this->raio, 50);
     }
+  
+    void desenhaCircle(float x, float y, float raio, int cor) {
+        if (selecao)
+            cor = 3;
+        CV::color(cor);
+        CV::circleFill(x, y, raio, 50);
+    }
+
     void desenhaCircle(int cor) {
         CV::color(0);
         CV::circle(this->x, this->y, this->raio, 50);
-    }
-
-    void desenhaCircle(float x, float y, float raio, int cor) {
-        CV::color(cor);
-        CV::circleFill(x, y, raio, 50);
     }
 
     void setDist(int mouseX, int mouseY) {
@@ -91,7 +104,7 @@ public:
 
     void colisaoRect(int mouseX, int mouseY, bool pressionado) {
         if (rectBorda(mouseX, mouseY)) {
-            cor = 10;
+            cor = 6;
             if (pressionado) {
                 arrastar = true;
                 
@@ -104,9 +117,8 @@ public:
         }
         if (!pressionado) {
             arrastar = false;
+            
         }
-        if (selecao)
-            cor = 3;
         //printf("\n TESTE SELECAO RETANGULO: %d", selecao);
     }
 
@@ -119,10 +131,11 @@ public:
 
     void colisaoCirc(int mouseX, int mouseY, bool pressionado) {
         if (circBorda(mouseX, mouseY)) {
-            cor = 10;
+            cor = 6;
            
             if (pressionado) {
                 arrastar = true;
+               
             }
         }
         else {
@@ -130,9 +143,8 @@ public:
         }
         if (!pressionado) {
             arrastar = false;
+            
         }
-        if (selecao)
-            cor = 3;
         //printf("\n TESTE SELECAO CIRCLE: %d", selecao);
     }
 

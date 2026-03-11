@@ -35,7 +35,9 @@
 int screenWidth = 500, screenHeight = 500;
 
 Figuras* retangulo;
+Figuras* sliderChoice;
 Figuras* circulo;
+Figuras* lista[3];
 Bola    *b = NULL;
 Relogio *r = NULL;
 Botao   *bt = NULL; //se a aplicacao tiver varios botoes, sugiro implementar um manager de botoes.
@@ -90,7 +92,7 @@ void DrawMouseScreenCoords()
 
 
 float sliderX = 30, sliderY = 250, sliderW = 30, sliderH = 10;
-Figuras* sliderChoice;
+
 void slider() {
     int idx;
     //desenha barra de cores
@@ -100,8 +102,12 @@ void slider() {
         CV::rectFill(sliderX, sliderY + (sliderH * idx), sliderX + sliderW, sliderY + sliderH + (sliderH * idx));
     }
     sliderChoice->desenhaCircle(idx);
-    sliderChoice->colisaoCirc(mouseX, mouseY, pressMouse);
-    sliderChoice->drag(mouseY);
+    
+    if (!retangulo->getArrast() && !circulo->getArrast()) {
+        sliderChoice->colisaoCirc(mouseX, mouseY, pressMouse);
+        sliderChoice->drag(mouseY);
+    }
+    
 
     //degrade fundo
     Vector2 v1, v2;
@@ -119,19 +125,27 @@ void slider() {
 //funcao chamada continuamente. Deve-se controlar o que desenhar por meio de variaveis globais
 //Todos os comandos para desenho na canvas devem ser chamados dentro da render().
 //Deve-se manter essa função com poucas linhas de codigo.
+Figuras* selecionada = nullptr;
 void render()
 {
-   
    CV::clear(1, 1, 1);
    retangulo->desenhaRect();
-   retangulo->colisaoRect(mouseX,mouseY, pressMouse);
-   retangulo->drag(mouseX, mouseY);
+
+   if (!circulo->getArrast() && !sliderChoice->getArrast()) {
+       retangulo->colisaoRect(mouseX, mouseY, pressMouse);
+       retangulo->drag(mouseX, mouseY);
+   }
+   
    if (pressTeclado) {
        retangulo->mexer(direcaoTeclado);
    }
    circulo->desenhaCircle();
-   circulo->colisaoCirc(mouseX, mouseY, pressMouse);
-   circulo->drag(mouseX, mouseY);
+   
+   if (!retangulo->getArrast() && !sliderChoice->getArrast()) {
+       circulo->colisaoCirc(mouseX, mouseY, pressMouse);
+       circulo->drag(mouseX, mouseY);
+   }
+       
    if (pressTeclado) {
        circulo->mexer(direcaoTeclado);
    }
@@ -253,7 +267,9 @@ int main(void)
    retangulo = new Figuras(50, 100, 50, 100, 4);
    circulo = new Figuras(250, 100, 30, 4);
    sliderChoice = new Figuras(45, 265, 20);
-
+   lista[0] = retangulo;
+   lista[1] = circulo;
+   lista[2] = sliderChoice;
    CV::init(&screenWidth, &screenHeight, "Demo Robson");
    CV::run();
 }
