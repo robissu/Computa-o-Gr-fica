@@ -85,7 +85,9 @@ public:
         if (!pressionado) {
             arrastar = false;
         }
-        
+        if (selecao)
+            cor = 3;
+        printf("\n TESTE SELECAO RETANGULO: %d", selecao);
     }
 
     bool circBorda(int mouseX, int mouseY) {
@@ -98,6 +100,7 @@ public:
     void colisaoCirc(int mouseX, int mouseY, bool pressionado) {
         if (circBorda(mouseX, mouseY)) {
             cor = 13;
+           
             if (pressionado) {
                 arrastar = true;
             }
@@ -108,9 +111,29 @@ public:
         if (!pressionado) {
             arrastar = false;
         }
+        if (selecao)
+            cor = 3;
+        printf("\n TESTE SELECAO CIRCLE: %d", selecao);
     }
 
 
+    void checaSelecaoRect(int mouseX, int mouseY) {
+        if (rectBorda(mouseX, mouseY)) {
+            selecao = true;
+        }
+        else {
+            selecao = false;
+        }
+    }
+
+    void checaSelecaoCircle(int mouseX, int mouseY) {
+        if (circBorda(mouseX, mouseY)) {
+            selecao = true;
+        }
+        else {
+            selecao = false;
+        }
+    }
 
 
     void mexer(int direcao) {

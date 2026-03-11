@@ -148,27 +148,27 @@ void keyboard(int key)
    if (pressTeclado) {
        switch (key)
        {
-       case 27:
+       case 27://esq
            exit(0);
            break;
 
-           //seta para a esquerda
-       case 200:
+           
+       case 200://esquerda
            direcaoTeclado = 0;
            break;
 
-           //cima
-       case 201:
+           
+       case 201://cima
            direcaoTeclado = 1;
            break;
 
-           //seta para a direita
-       case 202:
+           
+       case 202://direita
            direcaoTeclado = 2;
            break;
 
-           //baixo
-       case 203:
+           
+       case 203://baixo
            direcaoTeclado = 3;
            break;
        default:
@@ -209,6 +209,8 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
    }
    if (state == 1) {
        pressMouse = false;
+       retangulo->checaSelecaoRect(mouseX,mouseY);
+       circulo->checaSelecaoCircle(mouseX, mouseY);
    }
 
 

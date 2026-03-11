@@ -21,20 +21,20 @@ int *scrWidth, *scrHeight;
 //conjunto de cores predefinidas. Pode-se adicionar mais cores.
 float Colors[14][3]=
 {
-    {0, 0, 0}, //Black
-    {0.5, 0.5, 0.5}, //Gray
-    {1, 0, 0}, //Red
-    {0, 1, 0}, //Green
-    {0, 0, 1}, //Blue
-    {0, 1, 1}, //Cyan
-    {1, 0, 1}, //Magenta
-    {1, 1, 0}, //Yellow
-    {1, 0.5, 0}, //Orange
-    {0.5, 0, 0}, //Brown
-    {0.5, 0.5, 0}, //Olive
-    {0, 0.5, 0.5}, //
-    {0.5, 0, 0.5}, //
-    {1, 1, 1}, //white
+    {0, 0, 0}, //Black 0
+    {0.5, 0.5, 0.5}, //Gray 1
+    {1, 0, 0}, //Red 2
+    {0, 1, 0}, //Green 3
+    {0, 0, 1}, //Blue 4
+    {0, 1, 1}, //Cyan 5
+    {1, 0, 1}, //Magenta 6
+    {1, 1, 0}, //Yellow 7
+    {1, 0.5, 0}, //Orange 8
+    {0.5, 0, 0}, //Brown 9 
+    {0.5, 0.5, 0}, //Olive 10
+    {0, 0.5, 0.5}, // 11 
+    {0.5, 0, 0.5}, // 12
+    {1, 1, 1}, //white 13
 };
 
 void ConvertMouseCoord(int button, int state, int wheel, int direction, int x, int y);
