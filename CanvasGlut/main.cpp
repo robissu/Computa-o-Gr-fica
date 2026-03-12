@@ -187,18 +187,15 @@ void circleConfig() {
 */
 void polinomio()
 {
-    float limitX = 300;
-    float limitY = 100;
-    
-    float yMax = (limitX * limitX * limitX) - (3 * limitX) + 2;
-    float escala = limitY / yMax;
-
+    float limitX = 500;
+    float escalaX = 0.03f, escalaY = 30.0f;
     CV::color(1);
-    CV::translate(20, 200); //desenha o objeto a partir da coordenada (20, 200)
-    for (float x = 0; x < limitX; x+=0.001) {
-        float y = (x * x * x) - (3*x) + 2;
-        float yFinal = y * escala;
-        CV::point(x, yFinal);
+    CV::translate(100, 200); //desenha o objeto a partir da coordenada (20, 200)
+    for (float xF = -limitX; xF < limitX; xF+=0.001) {
+        float x = xF * escalaX;
+        float y = (x * x * x) - (3 * x) + 2;
+        float yF = y * escalaY;
+        CV::point(xF, yF);
     }
     CV::translate(0, 0);
 }
