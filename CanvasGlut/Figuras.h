@@ -51,10 +51,26 @@ public:
         return arrastar;
     }
 
+    float getX() {
+        return x;
+    }
+
     float getY() {
         return y;
     }
     
+    bool checaLista(Figuras* lista[]) {
+        for (int i = 0; i < 3; i++) {
+            if (!(lista[i] == this)) {
+                if (lista[i]->getArrast()) {
+                    return true;;
+                }
+            }
+        }
+        return false;
+    }
+
+
 
     void desenhaRect() {
         if (selecao)
@@ -103,10 +119,20 @@ public:
         }
     }
 
-    void drag(int mouseY, int sliderMin, int sliderMax) {
+    void dragY(int mouseY, int sliderMin, int sliderMax) {
         if (arrastar) {
-            if(mouseY>=sliderMin && mouseY<sliderMax)
+            if (mouseY >= sliderMin && mouseY < sliderMax) {
                 y = mouseY - distY;
+                
+            }     
+        }
+    }
+    void dragX(int mouseX, int sliderMin, int sliderMax) {
+        if (arrastar) {
+            if (mouseX >= sliderMin && mouseX < sliderMax) {
+                x = mouseX - distX;
+
+            }
         }
     }
     

@@ -27,7 +27,7 @@
 #include "Relogio.h"
 #include "Botao.h"
 #include "Figuras.h"
-
+#include "Slider.h"
 
 #define _CRT_SECURE_NO_WARNINGS
 #pragma warning(disable:4996)
@@ -35,6 +35,7 @@
 //largura e altura inicial da tela . Alteram com o redimensionamento de tela.
 int screenWidth = 500, screenHeight = 500;
 
+Slider* slid;
 Figuras* retangulo;
 Figuras* sliderChoice;
 Figuras* circulo;
@@ -49,25 +50,9 @@ bool pressTeclado = false;
 int direcaoTeclado = -1;
 
 
-float Colors1[14][3] =
-{
-    {0, 0, 0}, //Black 0
-    {0.5, 0.5, 0.5}, //Gray 1
-    {1, 0, 0}, //Red 2
-    {0, 1, 0}, //Green 3
-    {0, 0, 1}, //Blue 4
-    {0, 1, 1}, //Cyan 5
-    {1, 0, 1}, //Magenta 6
-    {1, 1, 0}, //Yellow 7
-    {1, 0.5, 0}, //Orange 8
-    {0.5, 0, 0}, //Brown 9 
-    {0.5, 0.5, 0}, //Olive 10
-    {0, 0.5, 0.5}, // 11 
-    {0.5, 0, 0.5}, // 12
-    {1, 1, 1}, //white 13
-};
 
 
+/*
 void DesenhaSenoide()
 {
    float x=0, y;
@@ -87,17 +72,17 @@ void DesenhaLinhaDegrade()
    Vector2 p;
    for(float i=0; i<350; i++)
    {
-	  CV::color(i/200, i/200, i/200);
-	  p.set(i+100, 240);
-	  CV::point(p);
+      CV::color(i/200, i/200, i/200);
+      p.set(i+100, 240);
+      CV::point(p);
    }
 
    //desenha paleta de cores predefinidas na Canvas2D.
    for(int idx = 0; idx < 14; idx++)
    {
-	  CV::color(idx);
+      CV::color(idx);
       CV::translate(20 + idx*30, 100);
-	  CV::rectFill(Vector2(0,0), Vector2(30, 30));
+      CV::rectFill(Vector2(0,0), Vector2(30, 30));
    }
    CV::translate(0, 0);
 }
@@ -110,59 +95,12 @@ void DrawMouseScreenCoords()
     sprintf(str, "Screen: (%d,%d)", screenWidth, screenHeight);
     CV::text(10,320, str);
 }
+*/
 
-float sliderX = 30, sliderY = 220, sliderW = 30, sliderH = 20;
-int coresMax = 14;
-void slider() {
-    int idx;
-    //desenha barra de cores
-    for (idx = 0; idx < coresMax; idx++)
-    {
-        CV::color(idx);
-        CV::rectFill(sliderX, sliderY + (sliderH * idx), sliderX + sliderW, sliderY + sliderH + (sliderH * idx));
-    }
-    sliderChoice->desenhaCircle(idx);
-    if (!retangulo->getArrast() && !circulo->getArrast()) {
-        sliderChoice->colisaoCirc(mouseX, mouseY, pressMouse);
-        sliderChoice->drag(mouseY, sliderY, sliderY + sliderH + (sliderH * (coresMax - 1)));
-    }
-
-    float alturaTotalBarra = sliderH * coresMax;
-    float deltaY = sliderChoice->getY() - sliderY;
-    //printf("\ndelta: %f", deltaY);
-    float t = deltaY / alturaTotalBarra;
-    if (t < 0)t = 0;
-    if (t > 0.99f)t = 0.99f;
-    int indexSelecionado = (int)(t * coresMax);
-    
-
-    
-    //retangulo degrade
-    Vector2 v1, v2;
-    float largura = 350;
-
-    int idxFim = indexSelecionado;
-    int idxInicio = indexSelecionado - 1;
-    for (float i = 0; i < largura; i++)
-    {
-        float t = i / largura;
-
-        // 3. O cálculo busca na matriz usando os dois índices calculados
-        float r = Colors1[idxInicio][0] + t * (Colors1[idxFim][0] - Colors1[idxInicio][0]);
-        float g = Colors1[idxInicio][1] + t * (Colors1[idxFim][1] - Colors1[idxInicio][1]);
-        float b = Colors1[idxInicio][2] + t * (Colors1[idxFim][2] - Colors1[idxInicio][2]);
-
-        CV::color(r, g, b);
-        v1.set(i + 100, 240);
-        v2.set(i + 101, 300);
-        CV::rectFill(v1, v2);
-    }
-
-}
 
 void retanguloConfig() {
     retangulo->desenhaRect();
-    if (!circulo->getArrast() && !sliderChoice->getArrast()) {
+    if (!retangulo->checaLista(lista)) {
         retangulo->colisaoRect(mouseX, mouseY, pressMouse);
         retangulo->drag(mouseX, mouseY);
     }
@@ -173,7 +111,7 @@ void retanguloConfig() {
 
 void circleConfig() {
     circulo->desenhaCircle();
-    if (!retangulo->getArrast() && !sliderChoice->getArrast()) {
+    if (!circulo->checaLista(lista)) {
         circulo->colisaoCirc(mouseX, mouseY, pressMouse);
         circulo->drag(mouseX, mouseY);
     }
@@ -182,24 +120,26 @@ void circleConfig() {
     }
 }
 
-/*
-(v-min)/(max-min)
-*/
 void polinomio()
 {
-    float limitX = 500;
-    float escalaX = 0.03f, escalaY = 30.0f;
-    CV::color(1);
-    CV::translate(100, 200); //desenha o objeto a partir da coordenada (20, 200)
-    for (float xF = -limitX; xF < limitX; xF+=0.001) {
-        float x = xF * escalaX;
-        float y = (x * x * x) - (3 * x) + 2;
-        float yF = y * escalaY;
-        CV::point(xF, yF);
+    CV::color(0);
+    CV::translate(screenWidth/2, screenHeight/2);
+    CV::line(-500, 0, 500, 0);
+    CV::line(0, -500, 0, 500);
+    float escalaX = 100, escalaY = 50;
+    for (float x = -3; x <= 3; x += 0.001)
+    {
+        float y = x * x * x - 3 * x + 2;
+        CV::point(x * escalaX, y * escalaY);
     }
-    CV::translate(0, 0);
 }
 
+void sliderConfig() {
+    slid->barraDeslize();
+    slid->circSeleciona(mouseX,mouseY, pressMouse, lista);
+    slid->retanguloDegrade(slid->posCirc());
+
+}
 //funcao chamada continuamente. Deve-se controlar o que desenhar por meio de variaveis globais
 //Todos os comandos para desenho na canvas devem ser chamados dentro da render().
 //Deve-se manter essa função com poucas linhas de codigo.
@@ -207,11 +147,11 @@ void render()
 {
    CV::clear(1, 1, 1);
 
-   //retanguloConfig();
-   //circleConfig();
+   retanguloConfig();
+   circleConfig();
    //slider();
-   polinomio();
-
+   //polinomio();
+   sliderConfig();
 
 
 
@@ -315,10 +255,9 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
        if (circulo->circBorda(mouseX, mouseY)) {
            circulo->setArrast(mouseX, mouseY);
        }
-       if (sliderChoice->circBorda(mouseX,mouseY)) {
-           sliderChoice->setArrast(mouseX, mouseY);
+       if (slid->getCirc()->circBorda(mouseX, mouseY)) {
+           slid->getCirc()->setArrast(mouseX, mouseY);
        }
-       
    }
    if (state == 1) {
        pressMouse = false;
@@ -335,12 +274,13 @@ int main(void)
    //b = new Bola();
    //r = new Relogio();
    //bt = new Botao(200, 400, 140, 50, "Sou um botao");
+   slid = new Slider(45, 220, 20, 30, 220, 30, 20, 0);
    retangulo = new Figuras(50, 100, 50, 100, 4);
    circulo = new Figuras(250, 100, 30, 4);
    sliderChoice = new Figuras(45, 220, 20);
    lista[0] = retangulo;
    lista[1] = circulo;
-   lista[2] = sliderChoice;
+   lista[2] = slid->getCirc();
    CV::init(&screenWidth, &screenHeight, "Demo Robson");
    CV::run();
 }
