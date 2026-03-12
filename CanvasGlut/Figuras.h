@@ -18,6 +18,8 @@ public:
         this->arrastar = false;
         this->vel = 5;
         this->selecao = false;
+        this->distX = 0;
+        this->distY = 0;
         //desenhaRect(this->x = x, this->y = y, this->width = width, this->height = height, this->cor = cor);
     }
     Figuras(float x, float y, float raio, int cor) {//circulo
@@ -28,6 +30,8 @@ public:
         this->arrastar = false;
         this->vel = 5;
         this->selecao = false;
+        this->distX = 0;
+        this->distY = 0;
         //desenhaCircle(this->x = x, this->y = y, this->raio = raio, this->cor = cor);
     }
     Figuras(float x, float y, float raio) {//circulo sem cor
@@ -38,12 +42,19 @@ public:
         this->arrastar = false;
         this->vel = 5;
         this->selecao = false;
+        this->distX = 0;
+        this->distY = 0;
         //desenhaCircle(this->x = x, this->y = y, this->raio = raio, this->cor = cor);
     }
 
     bool getArrast() {
         return arrastar;
     }
+
+    float getY() {
+        return y;
+    }
+    
 
     void desenhaRect() {
         if (selecao)
@@ -79,9 +90,10 @@ public:
         CV::circle(this->x, this->y, this->raio, 50);
     }
 
-    void setDist(int mouseX, int mouseY) {
+    void setArrast(int mouseX, int mouseY) {
         distX = mouseX - x;
         distY = mouseY - y;
+        arrastar = true;
     }
 
     void drag(int mouseX, int mouseY) {
@@ -91,12 +103,13 @@ public:
         }
     }
 
-    void drag(int mouseY) {
+    void drag(int mouseY, int sliderMin, int sliderMax) {
         if (arrastar) {
-            y = mouseY - distY;
+            if(mouseY>=sliderMin && mouseY<sliderMax)
+                y = mouseY - distY;
         }
     }
-
+    
     bool rectBorda(int mouseX, int mouseY) {
         return (mouseX >= x && mouseX <= x + width
             && mouseY >= y && mouseY <= y + height);
@@ -104,12 +117,7 @@ public:
 
     void colisaoRect(int mouseX, int mouseY, bool pressionado) {
         if (rectBorda(mouseX, mouseY)) {
-            cor = 6;
-            if (pressionado) {
-                arrastar = true;
-                
-            }
-                
+            cor = 6;  
         }
         else {
             cor = 4;
@@ -120,6 +128,7 @@ public:
             
         }
         //printf("\n TESTE SELECAO RETANGULO: %d", selecao);
+        //printf("\nTESTE POSICAO RECT= X: %f Y: %f", x, y);
     }
 
     bool circBorda(int mouseX, int mouseY) {
@@ -132,11 +141,6 @@ public:
     void colisaoCirc(int mouseX, int mouseY, bool pressionado) {
         if (circBorda(mouseX, mouseY)) {
             cor = 6;
-           
-            if (pressionado) {
-                arrastar = true;
-               
-            }
         }
         else {
             cor = 4;
@@ -146,6 +150,7 @@ public:
             
         }
         //printf("\n TESTE SELECAO CIRCLE: %d", selecao);
+        //printf("\nTESTE POSICAO CIRCLE= X: %f Y: %f", this->x, this->y);
     }
 
 
