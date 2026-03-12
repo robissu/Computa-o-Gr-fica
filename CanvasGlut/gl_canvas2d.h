@@ -16,6 +16,9 @@
 
 #define Y_CANVAS_CRESCE_PARA_CIMA 1
 
+
+
+
 class CV //classe Canvas2D
 {
 public:

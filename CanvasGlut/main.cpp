@@ -182,6 +182,27 @@ void circleConfig() {
     }
 }
 
+/*
+(v-min)/(max-min)
+*/
+void polinomio()
+{
+    float limitX = 300;
+    float limitY = 100;
+    
+    float yMax = (limitX * limitX * limitX) - (3 * limitX) + 2;
+    float escala = limitY / yMax;
+
+    CV::color(1);
+    CV::translate(20, 200); //desenha o objeto a partir da coordenada (20, 200)
+    for (float x = 0; x < limitX; x+=0.001) {
+        float y = (x * x * x) - (3*x) + 2;
+        float yFinal = y * escala;
+        CV::point(x, yFinal);
+    }
+    CV::translate(0, 0);
+}
+
 //funcao chamada continuamente. Deve-se controlar o que desenhar por meio de variaveis globais
 //Todos os comandos para desenho na canvas devem ser chamados dentro da render().
 //Deve-se manter essa função com poucas linhas de codigo.
@@ -189,10 +210,10 @@ void render()
 {
    CV::clear(1, 1, 1);
 
-   retanguloConfig();
-   circleConfig();
-   slider();
-
+   //retanguloConfig();
+   //circleConfig();
+   //slider();
+   polinomio();
 
 
 
