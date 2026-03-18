@@ -184,6 +184,10 @@
     <ClInclude Include="Slider.h" />
     <ClInclude Include="Vector2.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="gremio.bmp" />
+    <Image Include="gremio.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

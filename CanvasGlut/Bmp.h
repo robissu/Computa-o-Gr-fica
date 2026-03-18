@@ -59,6 +59,7 @@ public:
    int    getHeight(void);
    void   convertBGRtoRGB(void);
    void render();
+
 };
 
 #endif

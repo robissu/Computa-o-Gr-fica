@@ -54,4 +54,12 @@
       <Filter>Arquivos de Origem</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="gremio.bmp">
+      <Filter>Arquivos de Origem</Filter>
+    </Image>
+    <Image Include="gremio.png">
+      <Filter>Arquivos de Origem</Filter>
+    </Image>
+  </ItemGroup>
 </Project>

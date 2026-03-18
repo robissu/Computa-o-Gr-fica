@@ -75,7 +75,7 @@ public:
         }
     }
 
-    int posCirc() {
+    float normaCirc() {
         //calcula posicao do circulo na barra
         if (sent) {
             float alturaTotalBarra = sliderH * CORESMAX;
@@ -83,7 +83,7 @@ public:
             float t = deltaY / alturaTotalBarra;
             if (t < 0)t = 0;
             if (t > 0.99f)t = 0.99f;
-            return (int)(t * CORESMAX);
+            return (t);
         }
         else {
             float larguraTotalBarra = sliderW * CORESMAX;
@@ -91,16 +91,17 @@ public:
             float t = deltaX / larguraTotalBarra;
             if (t < 0)t = 0;
             if (t > 0.99f)t = 0.99f;
-            return (int)(t * CORESMAX);
+            return (t);
         }
         
     }
 
-    void retanguloDegrade(int indexSelecionado) {
+    void retanguloDegrade(float indexSelecionado) {
         //retangulo degrade
         Vector2 v1, v2;
         float largura = 350;
 
+        indexSelecionado = indexSelecionado * CORESMAX;
         int idxFim = indexSelecionado;
         int idxInicio = indexSelecionado - 1;
         for (float i = 0; i < largura; i++)

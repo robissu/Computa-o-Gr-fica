@@ -15,7 +15,7 @@
 
 Bmp::Bmp(const char *fileName)
 {
-   width = height = 0;
+   width = height =  0;
    data = NULL;
    if( fileName != NULL && strlen(fileName) > 0 )
    {
@@ -63,6 +63,7 @@ void Bmp::render()
 {
 
 }
+
 
 
 void Bmp::load(const char *fileName)

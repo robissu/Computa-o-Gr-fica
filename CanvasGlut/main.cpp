@@ -139,26 +139,44 @@ void polinomio()
 void sliderConfig() {
     slid->barraDeslize();
     slid->circSeleciona(mouseX,mouseY, pressMouse, lista);
-    slid->retanguloDegrade(slid->posCirc());
-
+    //slid->retanguloDegrade(slid->normaCirc());
 }
 
+float xImg;
+float yImg;
+float offImgX;
+float offImgY;
+int widthImg;
+int heightImg;
 
-void mostraImagem() {
+bool checaBordaImagem(float width, float height) {
+    return (mouseX >= xImg && mouseX <= xImg + width
+        && mouseY >= yImg && mouseY <= yImg + height);
+}
+
+bool moveImagem = false;
+
+void configImagem() {
+    float escala = slid->normaCirc();
+    
 
     for (int idx = 0; idx < imagem->getWidth() * imagem->getHeight() * 3; idx+=3) {
         CV::color(data[idx] / 255.0, data[idx + 1] / 255.0, data[idx + 2] / 255.0);
         int pixel = idx / 3;
         float x = pixel % imagem->getWidth();//colunas
         float y = pixel / imagem->getWidth();//linhas
-        float escala = 0.3;//valor entre 0 e 1,
-        float offsetX = 250;
-        float offsetY = 250;
-
-        CV::point(offsetX + x*escala, offsetY + y*escala);
+        //valor entre 0 e 1,
+        int dimX = x * escala;
+        int dimY = y * escala;
+        if (moveImagem) {
+            xImg = mouseX - offImgX;
+            yImg = mouseY - offImgY;
+            
+        }
+        CV::point(xImg + dimX, yImg + dimY);
     }
-    
-
+    widthImg = escala * imagem->getWidth();
+    heightImg = escala * imagem->getHeight();
 }
 
 
@@ -167,14 +185,14 @@ void mostraImagem() {
 //Deve-se manter essa função com poucas linhas de codigo.
 void render()
 {
-   CV::clear(0, 0, 0);
+   CV::clear(1, 1, 1);
 
    //retanguloConfig();
    //circleConfig();
    //slider();
    //polinomio();
-   //sliderConfig();
-   mostraImagem();
+   sliderConfig();
+   configImagem();
 
 
    // --------------------------------------------------------------------
@@ -280,11 +298,20 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
        if (slid->getCirc()->circBorda(mouseX, mouseY)) {
            slid->getCirc()->setArrast(mouseX, mouseY);
        }
+       printf("\n inicio width:: %d height:: %d", widthImg, heightImg);
+       if (checaBordaImagem(widthImg, heightImg)) {
+           printf("\n COLISAO");
+           moveImagem = true;
+           offImgX = mouseX - xImg;
+           offImgY = mouseY - yImg;
+           
+       }
    }
    if (state == 1) {
        pressMouse = false;
        retangulo->checaSelecaoRect(mouseX,mouseY);
        circulo->checaSelecaoCircle(mouseX, mouseY);
+       moveImagem = false;
    }
 
 
@@ -306,7 +333,10 @@ int main(void)
    imagem = new Bmp("gremio.bmp");
    imagem->convertBGRtoRGB();
    data = imagem->getImage();
-
+   xImg = 0;
+   yImg = 0;
+   widthImg = imagem->getWidth();
+   heightImg = imagem->getHeight();
    CV::init(&screenWidth, &screenHeight, "Demo Robson");
    CV::run();
 }
