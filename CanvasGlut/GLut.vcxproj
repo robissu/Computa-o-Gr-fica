@@ -169,11 +169,13 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="bmp.cpp" />
     <ClCompile Include="gl_canvas2d.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Relogio.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bmp.h" />
     <ClInclude Include="Bola.h" />
     <ClInclude Include="Botao.h" />
     <ClInclude Include="Figuras.h" />

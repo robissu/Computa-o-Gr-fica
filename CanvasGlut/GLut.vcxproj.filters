@@ -24,6 +24,9 @@
     <ClCompile Include="Relogio.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
+    <ClCompile Include="bmp.cpp">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bola.h">
@@ -45,6 +48,9 @@
       <Filter>Arquivos de Origem</Filter>
     </ClInclude>
     <ClInclude Include="Slider.h">
+      <Filter>Arquivos de Origem</Filter>
+    </ClInclude>
+    <ClInclude Include="Bmp.h">
       <Filter>Arquivos de Origem</Filter>
     </ClInclude>
   </ItemGroup>

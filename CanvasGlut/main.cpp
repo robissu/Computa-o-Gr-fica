@@ -28,6 +28,8 @@
 #include "Botao.h"
 #include "Figuras.h"
 #include "Slider.h"
+#include "Bmp.h"
+
 
 #define _CRT_SECURE_NO_WARNINGS
 #pragma warning(disable:4996)
@@ -48,8 +50,8 @@ int mouseX, mouseY; //variaveis globais do mouse para poder exibir dentro da ren
 bool pressMouse = false;
 bool pressTeclado = false;
 int direcaoTeclado = -1;
-
-
+Bmp *imagem;
+unsigned char* data;
 
 
 /*
@@ -140,19 +142,39 @@ void sliderConfig() {
     slid->retanguloDegrade(slid->posCirc());
 
 }
+
+
+void mostraImagem() {
+
+    for (int idx = 0; idx < imagem->getWidth() * imagem->getHeight() * 3; idx+=3) {
+        CV::color(data[idx] / 255.0, data[idx + 1] / 255.0, data[idx + 2] / 255.0);
+        int pixel = idx / 3;
+        float x = pixel % imagem->getWidth();//colunas
+        float y = pixel / imagem->getWidth();//linhas
+        float escala = 0.3;//valor entre 0 e 1,
+        float offsetX = 250;
+        float offsetY = 250;
+
+        CV::point(offsetX + x*escala, offsetY + y*escala);
+    }
+    
+
+}
+
+
 //funcao chamada continuamente. Deve-se controlar o que desenhar por meio de variaveis globais
 //Todos os comandos para desenho na canvas devem ser chamados dentro da render().
 //Deve-se manter essa função com poucas linhas de codigo.
 void render()
 {
-   CV::clear(1, 1, 1);
+   CV::clear(0, 0, 0);
 
-   retanguloConfig();
-   circleConfig();
+   //retanguloConfig();
+   //circleConfig();
    //slider();
    //polinomio();
-   sliderConfig();
-
+   //sliderConfig();
+   mostraImagem();
 
 
    // --------------------------------------------------------------------
@@ -281,6 +303,10 @@ int main(void)
    lista[0] = retangulo;
    lista[1] = circulo;
    lista[2] = slid->getCirc();
+   imagem = new Bmp("gremio.bmp");
+   imagem->convertBGRtoRGB();
+   data = imagem->getImage();
+
    CV::init(&screenWidth, &screenHeight, "Demo Robson");
    CV::run();
 }
