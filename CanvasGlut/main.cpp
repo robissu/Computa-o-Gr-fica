@@ -27,7 +27,7 @@
 //largura e altura inicial da tela . Alteram com o redimensionamento de tela.
 int screenWidth = 500, screenHeight = 500;
 
-char arquivo[] = { "gremioimpar.bmp" };
+char arquivo[] = { "tank.bmp" };
 Slider* slid;
 Objetos* retangulo;
 Objetos* sliderChoice;
@@ -35,7 +35,9 @@ Objetos* circulo;
 Objetos* imagem;
 Objetos* imagem2;
 std::vector<Objetos*> lista;
-
+Botao* vermelho;
+Botao* verde;
+Botao* azul;
 
 //se a aplicacao tiver varios botoes, sugiro implementar um manager de botoes.
 int opcao  = 50;//variavel global para selecao do que sera exibido na canvas.
@@ -88,10 +90,28 @@ void sliderConfig() {
 void configImagem() {
     float escala = slid->normaCirc();
     imagem->escalaImagem(escala, mouseX, mouseY);
-    imagem->desenhaHistogramaLuminancia(50,400, 256, 100);
+    imagem->desenhaHistograma(50,10, 256, 100);
 }
 
+int Objetos::graficoR = 0;
+int Objetos::graficoG = 0;
+int Objetos::graficoB = 0;
 
+void checaBotao() {
+    if (vermelho->hitClick(mouseX,mouseY)) {
+        Objetos::graficoR = 1;
+    }
+    else if (verde->hitClick(mouseX, mouseY)) {
+        Objetos::graficoG = 1;
+    }
+    else if (azul->hitClick(mouseX, mouseY)) {
+        Objetos::graficoB = 1;
+    }
+    else {
+        Objetos::graficoR = Objetos::graficoG = Objetos::graficoB = 0;
+    }
+    
+}
 //funcao chamada continuamente. Deve-se controlar o que desenhar por meio de variaveis globais
 //Todos os comandos para desenho na canvas devem ser chamados dentro da render().
 //Deve-se manter essa função com poucas linhas de codigo.
@@ -100,10 +120,13 @@ void render()
    CV::clear(1, 1, 1);
 
    //polinomio();
-   retanguloConfig();
-   circleConfig();
+   //retanguloConfig();
+   //circleConfig();
    sliderConfig();
    configImagem();
+   vermelho->Render();
+   verde->Render();
+   azul->Render();
 
    Sleep(10); //nao eh controle de FPS. Somente um limitador de FPS.
 }
@@ -181,11 +204,15 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
        if (!Objetos::checaListaArrasto(lista)) {
            Objetos::checaListaColisao(mouseX, mouseY, lista);
        }
+
    }
    if (state == 1) {
        pressMouse = false;
        retangulo->checaSelecaoRect(mouseX,mouseY);
        circulo->checaSelecaoCircle(mouseX, mouseY);
+
+       checaBotao();
+
        for (auto* obj : lista) {
            obj->soltaArrast(); // Garanta que essa função faça: arrastar = false;
        }
@@ -206,6 +233,12 @@ int main(void)
    lista.push_back(retangulo);
    lista.push_back(circulo);
    lista.push_back(imagem);
+   vermelho = new Botao(100, 400, 80, 30, "Vermelho", 2);
+   verde = new Botao(200, 400, 60, 30, "Verde", 3);
+   azul = new Botao(300, 400, 60, 30, "Azul", 4);
+
+
+
    CV::init(&screenWidth, &screenHeight, "Demo Robson");
    CV::run();
 }

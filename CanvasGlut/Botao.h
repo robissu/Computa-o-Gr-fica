@@ -10,22 +10,23 @@
 class Botao{
   float altura, largura, x, y;
   char label[100];
-
+  int cor;
 public:
-  Botao(float _x, float _y, float _larg, float _alt, const char *_label)
+  Botao(float _x, float _y, float _larg, float _alt, const char *_label, int _cor)
   {
      altura  = _alt;
      largura = _larg;
      x = _x;
      y = _y;
+     cor = _cor;
      strcpy(label, _label);
   }
 
   void Render()
   {
-      CV::color(0, 1, 0);
+      CV::color(cor);
       CV::rectFill(x, y, x + largura, y + altura);
-      CV::color(0, 0, 0);
+      CV::color(1, 1, 1);
       CV::text(x+5, y+altura/2, label); //escreve o label do botao mais ou menos ao centro.
   }
 

@@ -11,6 +11,7 @@ class Objetos {
     Bmp *imagem;
     unsigned char* data;
 public:
+    static int graficoR, graficoG, graficoB;
     Objetos(int tipo, float x, float y, float width, float height, int cor){//retangulo tipo 1
         this->tipo = tipo;
         this->x = x;
@@ -123,72 +124,74 @@ public:
         height = escala * imagem->getHeight();
     }
 
-    void desenhaHistogramaLuminancia(float hx, float hy, float largura, float alturaMax) {
-        if (tipo != 4 || data == NULL) return;
+    float normaliz(float v, float minV, float max, float min) {
+        return (v - minV) / (max - min);
+    }
 
-        // --- 1. Conta frequencia de cada nivel de luminancia (0-255) ---
-        int hist[256] = { 0 };
-        int totalPixels = imagem->getWidth() * imagem->getHeight();
+    void desenhaHistograma(float pX, float pY, float largura, float altura) {
+        int histR[256] = { 0 };
+        int histG[256] = { 0 };
+        int histB[256] = { 0 };
 
         for (int idxY = 0; idxY < imagem->getHeight(); idxY++) {
             for (int idxX = 0; idxX < imagem->getWidth(); idxX++) {
                 int idx = idxY * imagem->getBytes() + idxX * 3;
-                // Coeficientes BT.601 de luminancia perceptual (R, G, B ja convertidos)
-                float lum = data[idx] * 0.299f
-                    + data[idx + 1] * 0.587f
-                    + data[idx + 2] * 0.114f;
-                int bin = (int)lum;
-                if (bin > 255) bin = 255;
-                hist[bin]++;
+
+                histR[data[idx]]++;
+                histG[data[idx+1]]++;
+                histB[data[idx+2]]++;
             }
         }
 
-        // --- 2. Acha o valor maximo para normalizar a altura das barras ---
-        int maxVal = 1;
-        for (int i = 0; i < 256; i++)
-            if (hist[i] > maxVal) maxVal = hist[i];
-
-        // --- 3. Desenha fundo do histograma ---
-        CV::color(0.9f, 0.85f, 0.75f); // fundo bege como na referencia
-        CV::rectFill(hx, hy, hx + largura, hy + alturaMax);
-
-        // --- 4. Desenha borda ---
-        CV::color(0, 0, 0);
-        CV::rect(hx, hy, hx + largura, hy + alturaMax);
-
-        // --- 5. Titulo ---
-        CV::color(0, 0, 0);
-        CV::text(hx + 5, hy + alturaMax - 15, "Histograma Luminancia");
-
-        // --- 6. Desenha as barras do histograma ---
-        float barW = largura / 256.0f; // largura de cada barra/bin
-
+        
+        int maxR = 0, maxG = 0, maxB = 0;
         for (int i = 0; i < 256; i++) {
-            float barH = ((float)hist[i] / (float)maxVal) * (alturaMax - 20);
-            float bx = hx + i * barW;
-            float by = hy; // base
-
-            // Barra de luminancia em verde, como na imagem de referencia
-            CV::color(0.0f, 0.8f, 0.0f);
-            CV::rectFill(bx, by, bx + barW, by + barH);
+            if (histR[i] > maxR)
+                maxR = histR[i];
+            if (histG[i] > maxG)
+                maxG = histG[i];
+            if (histB[i] > maxB)
+                maxB = histB[i];
         }
 
-        // --- 7. Info: Max, Min, Avg ---
-        char info[80];
-        int minVal = 0, avgAcc = 0, count = 0;
-        for (int i = 0; i < 256; i++) {
-            if (hist[i] > 0) { minVal = i; break; }
-        }
-        for (int i = 0; i < 256; i++) {
-            avgAcc += hist[i] * i;
-            count += hist[i];
-        }
-        int avg = (count > 0) ? (avgAcc / count) : 0;
-        int maxPct = (int)((float)maxVal / totalPixels * 100);
 
-        sprintf(info, "Max:%d(%d%%) Min:%d Avg:%d", maxVal, maxPct, minVal, avg);
-        CV::color(0, 0, 0);
-        CV::text(hx + 5, hy + alturaMax + 12, info);
+        //vermelho
+        if (graficoR) {
+            CV::color(1, 0, 0);
+            for (int i = 0; i < 256; i++) {
+                float xR = pX + normaliz(i, 0, 255.0f, 0) * largura;
+                float hR = normaliz(histR[i], 0, maxR, 0) * altura;
+
+                CV::line(xR, pY, xR, pY + hR);
+            }
+        }
+        
+
+        //verde
+        if (graficoG) {
+            CV::color(0, 1, 0);
+            for (int i = 0; i < 256; i++) {
+                float xG = pX + normaliz(i, 0, 255.0f, 0) * largura;
+                float hG = normaliz(histG[i], 0, maxG, 0) * altura;
+
+                CV::line(xG, pY, xG, pY + hG);
+            }
+        }
+        
+
+        //AZUL
+        if (graficoB) {
+            CV::color(0, 0, 1);
+            for (int i = 0; i < 256; i++) {
+                float xB = pX + normaliz(i, 0, 255.0f, 0) * largura;
+                float hB = normaliz(histB[i], 0, maxB, 0) * altura;
+
+                CV::line(xB, pY, xB, pY + hB);
+            }
+        }
+        
+
+
     }
 
     bool hitClick(int mouseX, int mouseY) {
