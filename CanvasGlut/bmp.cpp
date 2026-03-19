@@ -42,6 +42,10 @@ int Bmp::getHeight(void)
   return height;
 }
 
+int Bmp::getBytes(void) {
+    return bytesPerLine;
+}
+
 void Bmp::convertBGRtoRGB()
 {
   unsigned char tmp;

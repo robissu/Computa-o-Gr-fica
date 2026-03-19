@@ -45,6 +45,9 @@ class Bmp
 private:
    int width, height, imagesize, bytesPerLine, bits;
    unsigned char *data;
+   int histR[256];
+   int histG[256];
+   int histB[256];
 
    HEADER     header;
    INFOHEADER info;
@@ -52,12 +55,11 @@ private:
    void load(const char *fileName);
 
 public:
-
-   
    Bmp(const char *fileName);
    uchar* getImage();
    int    getWidth(void);
    int    getHeight(void);
+   int getBytes(void);
    void   convertBGRtoRGB(void);
    void render();
 

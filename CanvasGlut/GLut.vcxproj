@@ -187,6 +187,7 @@
   <ItemGroup>
     <Image Include="gremio.bmp" />
     <Image Include="gremio.png" />
+    <Image Include="gremioimpar.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

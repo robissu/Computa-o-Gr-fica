@@ -27,12 +27,13 @@
 //largura e altura inicial da tela . Alteram com o redimensionamento de tela.
 int screenWidth = 500, screenHeight = 500;
 
-char arquivo[] = { "gremio.bmp" };
+char arquivo[] = { "gremioimpar.bmp" };
 Slider* slid;
 Objetos* retangulo;
 Objetos* sliderChoice;
 Objetos* circulo;
 Objetos* imagem;
+Objetos* imagem2;
 std::vector<Objetos*> lista;
 
 
@@ -87,7 +88,6 @@ void sliderConfig() {
 void configImagem() {
     float escala = slid->normaCirc();
     imagem->escalaImagem(escala, mouseX, mouseY);
-
 }
 
 
@@ -205,7 +205,6 @@ int main(void)
    lista.push_back(retangulo);
    lista.push_back(circulo);
    lista.push_back(imagem);
-
    CV::init(&screenWidth, &screenHeight, "Demo Robson");
    CV::run();
 }

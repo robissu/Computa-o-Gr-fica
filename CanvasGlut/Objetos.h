@@ -96,20 +96,47 @@ public:
             x = mouseX - distX;
             y = mouseY - distY;
         }
+        
+        for (int idxY = 0; idxY < imagem->getHeight(); idxY++) {
+            for (int idxX = 0; idxX < imagem->getWidth(); idxX++) {
+                int idx = idxY * imagem->getBytes() + idxX * 3;
 
-        for (int idx = 0; idx < imagem->getWidth() * imagem->getHeight() * 3; idx += 3) {
-            CV::color(data[idx] / 255.0, data[idx + 1] / 255.0, data[idx + 2] / 255.0);
-            int pixel = idx / 3;
-            float pX = pixel % imagem->getWidth();//colunas
-            float pY= pixel / imagem->getWidth();//linhasdistX
-            //valor entre 0 e 1,
-            int dimX = pX * escala;
-            int dimY = pY * escala;
+                if (!arrastar) {
+                    CV::color(data[idx] / 255.0, data[idx + 1] / 255.0, data[idx + 2] / 255.0);
+                }
+                    
+                else {
+                    CV::color(data[idx] / 255.0 * (0.5), data[idx + 1] / 255.0 * (0.5), data[idx + 2] / 255.0* (0.5));
+                }
+                
+                //valor entre 0 e 1,
+                int dimX = idxX * escala;
+                int dimY = idxY * escala;
+                
+                CV::point(x + dimX, y + dimY);
+            }
             
-            CV::point(x + dimX, y + dimY);
         }
         width = escala * imagem->getWidth();
         height = escala * imagem->getHeight();
+
+        //for (int idx = 0; idx < imagem->getWidth() * imagem->getHeight() * 3; idx += 3) {
+        //    
+        //    CV::color(data[idx] / 255.0, data[idx + 1] / 255.0, data[idx + 2] / 255.0);
+        //    
+        //        
+        //    
+        //    int pixel = idx / 3;
+        //    //valor entre 0 e 1,
+        //    float pX = pixel % imagem->getWidth();//colunas
+        //    float pY= pixel / imagem->getWidth();//linhas
+        //    int dimX = pX * escala;
+        //    int dimY = pY * escala;
+        //    
+        //    CV::point(x + dimX, y + dimY);
+        //}
+        //width = escala * imagem->getWidth();
+        //height = escala * imagem->getHeight();
     }
 
     bool hitClick(int mouseX, int mouseY) {
