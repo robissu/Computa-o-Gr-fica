@@ -178,7 +178,7 @@
     <ClInclude Include="Bmp.h" />
     <ClInclude Include="Bola.h" />
     <ClInclude Include="Botao.h" />
-    <ClInclude Include="Figuras.h" />
+    <ClInclude Include="Objetos.h" />
     <ClInclude Include="gl_canvas2d.h" />
     <ClInclude Include="Relogio.h" />
     <ClInclude Include="Slider.h" />

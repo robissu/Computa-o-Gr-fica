@@ -30,7 +30,7 @@ public:
   }
 
   //recebe as coordenadas do mouse para tratar clique ou detectar quando o mouse esta em cima do botao
-  bool Colidiu(int mx, int my)
+  bool hitClick(int mx, int my)
   {
       if( mx >= x && mx <= (x + largura) && my >= y && my <= (y + altura) )
       {

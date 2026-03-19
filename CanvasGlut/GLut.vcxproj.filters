@@ -44,7 +44,7 @@
     <ClInclude Include="Vector2.h">
       <Filter>Arquivos de Origem</Filter>
     </ClInclude>
-    <ClInclude Include="Figuras.h">
+    <ClInclude Include="Objetos.h">
       <Filter>Arquivos de Origem</Filter>
     </ClInclude>
     <ClInclude Include="Slider.h">

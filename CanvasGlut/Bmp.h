@@ -15,7 +15,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 #define HEADER_SIZE      14 //sizeof(HEADER) vai dar 16 devido ao alinhamento de bytes
 #define INFOHEADER_SIZE  40 //sizeof(INFOHEADER) da 40 e esta correto.
 #define uchar unsigned char
@@ -53,6 +52,8 @@ private:
    void load(const char *fileName);
 
 public:
+
+   
    Bmp(const char *fileName);
    uchar* getImage();
    int    getWidth(void);

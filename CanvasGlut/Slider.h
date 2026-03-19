@@ -2,7 +2,7 @@
 #define __SLIDER_H__
 
 #include "gl_canvas2d.h"
-#include "Figuras.h"
+#include "Objetos.h"
 
 #define CORESMAX 14
 
@@ -24,15 +24,13 @@ float Colors1[14][3] =
     {1, 1, 1}, //white 13
 };
 
-
-
 class Slider {
     float sliderX, sliderY, sliderW, sliderH;
     int sent;
-    Figuras* circ;
+    Objetos* circ;
 public:
     Slider(float x, float y, float raio, float initX, float initY, float width, float height, int sentido) {
-        circ = new Figuras(x, y, raio);
+        circ = new Objetos(3, x, y, raio);
         sliderX = initX;
         sliderY = initY;
         sliderW = width;
@@ -40,7 +38,7 @@ public:
         sent = sentido;
     }
 
-    Figuras* getCirc() {
+    Objetos* getCirc() {
         return circ;
     }
 
@@ -62,9 +60,9 @@ public:
             }
         }
     }
-    void circSeleciona(int mouseX, int mouseY, bool pressMouse, Figuras *lista[]) {
+    void circSeleciona(int mouseX, int mouseY, bool pressMouse, std::vector<Objetos*>& lista) {
         circ->desenhaCircle(0);
-        if (!circ->checaLista(lista)) {
+        if (circ->getArrast() || !Objetos::checaListaArrasto(lista)) {
             circ->colisaoCirc(mouseX, mouseY, pressMouse);
             if (sent) {
                 circ->dragY(mouseY, sliderY, sliderY + sliderH + (sliderH * (CORESMAX - 1)));

@@ -1,15 +1,18 @@
-#ifndef __FIGURAS_H__
-#define __FIGURAS_H__
+#ifndef __Objetos_H__
+#define __Objetos_H__
 
 #include "gl_canvas2d.h"
+#include "Bmp.h"
 
-class Figuras {
+class Objetos {
     float x, y, width, height, raio, distX, distY, vel;
-    int cor;
+    int cor, tipo;
     bool arrastar, selecao;
-   
+    Bmp *imagem;
+    unsigned char* data;
 public:
-    Figuras(float x, float y, float width, float height, int cor){//retangulo
+    Objetos(int tipo, float x, float y, float width, float height, int cor){//retangulo tipo 1
+        this->tipo = tipo;
         this->x = x;
         this->y = y;
         this->width = width;
@@ -20,9 +23,9 @@ public:
         this->selecao = false;
         this->distX = 0;
         this->distY = 0;
-        //desenhaRect(this->x = x, this->y = y, this->width = width, this->height = height, this->cor = cor);
     }
-    Figuras(float x, float y, float raio, int cor) {//circulo
+    Objetos(int tipo, float x, float y, float raio, int cor) {//circulo tipo 2
+        this->tipo = tipo;
         this->x = x;
         this->y = y;
         this->raio = raio;
@@ -32,9 +35,9 @@ public:
         this->selecao = false;
         this->distX = 0;
         this->distY = 0;
-        //desenhaCircle(this->x = x, this->y = y, this->raio = raio, this->cor = cor);
     }
-    Figuras(float x, float y, float raio) {//circulo sem cor
+    Objetos(int tipo, float x, float y, float raio) {//circulo sem cor tipo 3
+        this->tipo = tipo;
         this->x = x;
         this->y = y;
         this->raio = raio;
@@ -44,11 +47,36 @@ public:
         this->selecao = false;
         this->distX = 0;
         this->distY = 0;
-        //desenhaCircle(this->x = x, this->y = y, this->raio = raio, this->cor = cor);
+    }
+    Objetos(int tipo, char* nome) {//imagem tipo 4
+        this->tipo = tipo;
+        imagem = new Bmp(nome);
+        imagem->convertBGRtoRGB();
+        data = imagem->getImage();
+        x = 0;
+        y = 0;
+        width = (float)imagem->getWidth();
+        height = (float)imagem->getHeight();
     }
 
     bool getArrast() {
         return arrastar;
+    }
+
+    unsigned char* getData(){
+        return data;
+    }
+
+    Bmp *getBmp() {
+        return imagem;
+    }
+
+    float getWidth() {
+        return width;
+    }
+
+    float getHeight() {
+        return height;
     }
 
     float getX() {
@@ -58,18 +86,59 @@ public:
     float getY() {
         return y;
     }
-    
-    bool checaLista(Figuras* lista[]) {
-        for (int i = 0; i < 3; i++) {
-            if (!(lista[i] == this)) {
-                if (lista[i]->getArrast()) {
-                    return true;;
-                }
+
+    void soltaArrast() {
+        arrastar = false;
+    }
+
+    void escalaImagem(float escala, int mouseX, int mouseY) {
+        if (arrastar) {
+            x = mouseX - distX;
+            y = mouseY - distY;
+        }
+
+        for (int idx = 0; idx < imagem->getWidth() * imagem->getHeight() * 3; idx += 3) {
+            CV::color(data[idx] / 255.0, data[idx + 1] / 255.0, data[idx + 2] / 255.0);
+            int pixel = idx / 3;
+            float pX = pixel % imagem->getWidth();//colunas
+            float pY= pixel / imagem->getWidth();//linhasdistX
+            //valor entre 0 e 1,
+            int dimX = pX * escala;
+            int dimY = pY * escala;
+            
+            CV::point(x + dimX, y + dimY);
+        }
+        width = escala * imagem->getWidth();
+        height = escala * imagem->getHeight();
+    }
+
+    bool hitClick(int mouseX, int mouseY) {
+        if (tipo == 1 || tipo == 4) {
+            return rectBorda(mouseX, mouseY);
+        }
+        else if (tipo == 2 || tipo == 3) {
+            return circBorda(mouseX, mouseY);
+        }
+
+    }
+
+    static bool checaListaArrasto(std::vector<Objetos*>& lista) {//checase algum ta sendo arrastado
+        for (auto* obj : lista) {
+            if (obj->arrastar) {
+                return true;
             }
         }
         return false;
     }
 
+    static void checaListaColisao(int mouseX, int mouseY, std::vector<Objetos*>& lista) {
+        for (int i = lista.size() -1; i >= 0; i--) {
+            if (lista[i]->hitClick(mouseX, mouseY)) {
+                lista[i]->setArrast(mouseX, mouseY);
+                break;
+            }
+        }
+    }
 
 
     void desenhaRect() {
@@ -136,6 +205,7 @@ public:
         }
     }
     
+
     bool rectBorda(int mouseX, int mouseY) {
         return (mouseX >= x && mouseX <= x + width
             && mouseY >= y && mouseY <= y + height);

@@ -1,17 +1,6 @@
 /*********************************************************************
-// Canvas para desenho, criada sobre a API OpenGL. Nao eh necessario conhecimentos de OpenGL para usar.
-//  Autor: Cesar Tadeu Pozzer
-//         08/2025
-//
-//  Pode ser utilizada para fazer desenhos, animacoes, e jogos simples.
-//  Tem tratamento de mouse e teclado
-//  Estude o OpenGL antes de tentar compreender o arquivo gl_canvas.cpp
-//
-//  Versao 2.1
-//
-//  Instruções:
-//	  Para alterar a animacao, digite numeros entre 1 e 3
-//    Programa cheio de numeros magicos. Nao use isso nunca.
+// Canvas
+// Autor: Robson Daniel Marchesan
 // *********************************************************************/
 
 #include <GL/glut.h>
@@ -20,13 +9,14 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <vector>
+
 
 #include "gl_canvas2d.h"
-
 #include "Bola.h"
 #include "Relogio.h"
 #include "Botao.h"
-#include "Figuras.h"
+#include "Objetos.h"
 #include "Slider.h"
 #include "Bmp.h"
 
@@ -37,73 +27,26 @@
 //largura e altura inicial da tela . Alteram com o redimensionamento de tela.
 int screenWidth = 500, screenHeight = 500;
 
+char arquivo[] = { "gremio.bmp" };
 Slider* slid;
-Figuras* retangulo;
-Figuras* sliderChoice;
-Figuras* circulo;
-Figuras* lista[3];
-Bola    *b = NULL;
-Relogio *r = NULL;
-Botao   *bt = NULL; //se a aplicacao tiver varios botoes, sugiro implementar um manager de botoes.
+Objetos* retangulo;
+Objetos* sliderChoice;
+Objetos* circulo;
+Objetos* imagem;
+std::vector<Objetos*> lista;
+
+
+//se a aplicacao tiver varios botoes, sugiro implementar um manager de botoes.
 int opcao  = 50;//variavel global para selecao do que sera exibido na canvas.
 int mouseX, mouseY; //variaveis globais do mouse para poder exibir dentro da render().
 bool pressMouse = false;
 bool pressTeclado = false;
 int direcaoTeclado = -1;
-Bmp *imagem;
-unsigned char* data;
-
-
-/*
-void DesenhaSenoide()
-{
-   float x=0, y;
-   CV::color(1);
-   CV::translate(20, 200); //desenha o objeto a partir da coordenada (200, 200)
-   for(float i=0; i < 68; i+=0.001f)
-   {
-      y = sinf(i)*50;
-      CV::point(x, y);
-      x += 0.01f;
-   }
-   CV::translate(0, 0);
-}
-
-void DesenhaLinhaDegrade()
-{
-   Vector2 p;
-   for(float i=0; i<350; i++)
-   {
-      CV::color(i/200, i/200, i/200);
-      p.set(i+100, 240);
-      CV::point(p);
-   }
-
-   //desenha paleta de cores predefinidas na Canvas2D.
-   for(int idx = 0; idx < 14; idx++)
-   {
-      CV::color(idx);
-      CV::translate(20 + idx*30, 100);
-      CV::rectFill(Vector2(0,0), Vector2(30, 30));
-   }
-   CV::translate(0, 0);
-}
-
-void DrawMouseScreenCoords()
-{
-    char str[100];
-    sprintf(str, "Mouse: (%d,%d)", mouseX, mouseY);
-    CV::text(10,300, str);
-    sprintf(str, "Screen: (%d,%d)", screenWidth, screenHeight);
-    CV::text(10,320, str);
-}
-*/
 
 
 void retanguloConfig() {
     retangulo->desenhaRect();
-    if (!retangulo->checaLista(lista)) {
-        retangulo->colisaoRect(mouseX, mouseY, pressMouse);
+    if (retangulo->getArrast()) {
         retangulo->drag(mouseX, mouseY);
     }
     if (pressTeclado) {
@@ -113,8 +56,7 @@ void retanguloConfig() {
 
 void circleConfig() {
     circulo->desenhaCircle();
-    if (!circulo->checaLista(lista)) {
-        circulo->colisaoCirc(mouseX, mouseY, pressMouse);
+    if (circulo->getArrast()) {
         circulo->drag(mouseX, mouseY);
     }
     if (pressTeclado) {
@@ -142,41 +84,10 @@ void sliderConfig() {
     //slid->retanguloDegrade(slid->normaCirc());
 }
 
-float xImg;
-float yImg;
-float offImgX;
-float offImgY;
-int widthImg;
-int heightImg;
-
-bool checaBordaImagem(float width, float height) {
-    return (mouseX >= xImg && mouseX <= xImg + width
-        && mouseY >= yImg && mouseY <= yImg + height);
-}
-
-bool moveImagem = false;
-
 void configImagem() {
     float escala = slid->normaCirc();
-    
+    imagem->escalaImagem(escala, mouseX, mouseY);
 
-    for (int idx = 0; idx < imagem->getWidth() * imagem->getHeight() * 3; idx+=3) {
-        CV::color(data[idx] / 255.0, data[idx + 1] / 255.0, data[idx + 2] / 255.0);
-        int pixel = idx / 3;
-        float x = pixel % imagem->getWidth();//colunas
-        float y = pixel / imagem->getWidth();//linhas
-        //valor entre 0 e 1,
-        int dimX = x * escala;
-        int dimY = y * escala;
-        if (moveImagem) {
-            xImg = mouseX - offImgX;
-            yImg = mouseY - offImgY;
-            
-        }
-        CV::point(xImg + dimX, yImg + dimY);
-    }
-    widthImg = escala * imagem->getWidth();
-    heightImg = escala * imagem->getHeight();
 }
 
 
@@ -187,35 +98,12 @@ void render()
 {
    CV::clear(1, 1, 1);
 
-   //retanguloConfig();
-   //circleConfig();
-   //slider();
    //polinomio();
+   retanguloConfig();
+   circleConfig();
    sliderConfig();
    configImagem();
 
-
-   // --------------------------------------------------------------------
-   //Codigo do professor
-   /*//CV::rectFill(10, 10, 10, 10);
-   float x[3] = {10, 130, 20};
-   float y[3] = {10, 50, 100};
-   //CV::triangleFill(x, y);
-   DrawMouseScreenCoords();
-   //bt->Render();
-   //DesenhaLinhaDegrade();
-   if( opcao == 49 ) //'1' -> relogio
-   {
-      r->anima();
-   }
-   if( opcao == '2' ) //50 -> bola
-   {
-      b->anima();
-   }
-   if( opcao == 51 ) //'3' -> senoide
-   {
-       DesenhaSenoide();
-   }*/
    Sleep(10); //nao eh controle de FPS. Somente um limitador de FPS.
 }
 
@@ -289,29 +177,17 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
    //printf("\n COORDENADAS MOUSE-> X: %d Y: %d", mouseX, mouseY);
    if (state == 0) {
        pressMouse = true;
-       if (retangulo->rectBorda(mouseX, mouseY)) {
-           retangulo->setArrast(mouseX, mouseY);
-       }
-       if (circulo->circBorda(mouseX, mouseY)) {
-           circulo->setArrast(mouseX, mouseY);
-       }
-       if (slid->getCirc()->circBorda(mouseX, mouseY)) {
-           slid->getCirc()->setArrast(mouseX, mouseY);
-       }
-       printf("\n inicio width:: %d height:: %d", widthImg, heightImg);
-       if (checaBordaImagem(widthImg, heightImg)) {
-           printf("\n COLISAO");
-           moveImagem = true;
-           offImgX = mouseX - xImg;
-           offImgY = mouseY - yImg;
-           
+       if (!Objetos::checaListaArrasto(lista)) {
+           Objetos::checaListaColisao(mouseX, mouseY, lista);
        }
    }
    if (state == 1) {
        pressMouse = false;
        retangulo->checaSelecaoRect(mouseX,mouseY);
        circulo->checaSelecaoCircle(mouseX, mouseY);
-       moveImagem = false;
+       for (auto* obj : lista) {
+           obj->soltaArrast(); // Garanta que essa função faça: arrastar = false;
+       }
    }
 
 
@@ -320,23 +196,16 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
 
 int main(void)
 {
-   //b = new Bola();
-   //r = new Relogio();
-   //bt = new Botao(200, 400, 140, 50, "Sou um botao");
+   
    slid = new Slider(45, 220, 20, 30, 220, 30, 20, 0);
-   retangulo = new Figuras(50, 100, 50, 100, 4);
-   circulo = new Figuras(250, 100, 30, 4);
-   sliderChoice = new Figuras(45, 220, 20);
-   lista[0] = retangulo;
-   lista[1] = circulo;
-   lista[2] = slid->getCirc();
-   imagem = new Bmp("gremio.bmp");
-   imagem->convertBGRtoRGB();
-   data = imagem->getImage();
-   xImg = 0;
-   yImg = 0;
-   widthImg = imagem->getWidth();
-   heightImg = imagem->getHeight();
+   retangulo = new Objetos(1,50, 100, 50, 100, 4);
+   circulo = new Objetos(2, 250, 100, 30, 4);
+   imagem = new Objetos(4,arquivo);
+   lista.push_back(slid->getCirc());
+   lista.push_back(retangulo);
+   lista.push_back(circulo);
+   lista.push_back(imagem);
+
    CV::init(&screenWidth, &screenHeight, "Demo Robson");
    CV::run();
 }
