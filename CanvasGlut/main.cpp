@@ -88,6 +88,7 @@ void sliderConfig() {
 void configImagem() {
     float escala = slid->normaCirc();
     imagem->escalaImagem(escala, mouseX, mouseY);
+    imagem->desenhaHistogramaLuminancia(50,400, 256, 100);
 }
 
 

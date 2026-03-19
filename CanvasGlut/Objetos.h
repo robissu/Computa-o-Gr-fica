@@ -106,7 +106,9 @@ public:
                 }
                     
                 else {
-                    CV::color(data[idx] / 255.0 * (0.5), data[idx + 1] / 255.0 * (0.5), data[idx + 2] / 255.0* (0.5));
+                    float y = data[idx] * 0.3 + data[idx + 1] * 0.5 + data[idx + 2] * 0.2;//cinza
+
+                    CV::color(y / 255.0 * (0.5), y / 255.0 * (0.5), y / 255.0* (0.5));
                 }
                 
                 //valor entre 0 e 1,
@@ -119,25 +121,9 @@ public:
         }
         width = escala * imagem->getWidth();
         height = escala * imagem->getHeight();
-
-        //for (int idx = 0; idx < imagem->getWidth() * imagem->getHeight() * 3; idx += 3) {
-        //    
-        //    CV::color(data[idx] / 255.0, data[idx + 1] / 255.0, data[idx + 2] / 255.0);
-        //    
-        //        
-        //    
-        //    int pixel = idx / 3;
-        //    //valor entre 0 e 1,
-        //    float pX = pixel % imagem->getWidth();//colunas
-        //    float pY= pixel / imagem->getWidth();//linhas
-        //    int dimX = pX * escala;
-        //    int dimY = pY * escala;
-        //    
-        //    CV::point(x + dimX, y + dimY);
-        //}
-        //width = escala * imagem->getWidth();
-        //height = escala * imagem->getHeight();
     }
+
+
 
     bool hitClick(int mouseX, int mouseY) {
         if (tipo == 1 || tipo == 4) {

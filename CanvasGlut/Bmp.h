@@ -43,25 +43,22 @@ typedef struct {
 class Bmp
 {
 private:
-   int width, height, imagesize, bytesPerLine, bits;
-   unsigned char *data;
-   int histR[256];
-   int histG[256];
-   int histB[256];
+    int width, height, imagesize, bytesPerLine, bits;
+    unsigned char *data;
 
-   HEADER     header;
-   INFOHEADER info;
+    HEADER     header;
+    INFOHEADER info;
 
-   void load(const char *fileName);
+    void load(const char *fileName);
 
 public:
-   Bmp(const char *fileName);
-   uchar* getImage();
-   int    getWidth(void);
-   int    getHeight(void);
-   int getBytes(void);
-   void   convertBGRtoRGB(void);
-   void render();
+    Bmp(const char *fileName);
+    uchar* getImage();
+    int    getWidth(void);
+    int    getHeight(void);
+    int getBytes(void);
+    void   convertBGRtoRGB(void);
+    void render();
 
 };
 
