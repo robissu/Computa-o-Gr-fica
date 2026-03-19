@@ -123,7 +123,73 @@ public:
         height = escala * imagem->getHeight();
     }
 
+    void desenhaHistogramaLuminancia(float hx, float hy, float largura, float alturaMax) {
+        if (tipo != 4 || data == NULL) return;
 
+        // --- 1. Conta frequencia de cada nivel de luminancia (0-255) ---
+        int hist[256] = { 0 };
+        int totalPixels = imagem->getWidth() * imagem->getHeight();
+
+        for (int idxY = 0; idxY < imagem->getHeight(); idxY++) {
+            for (int idxX = 0; idxX < imagem->getWidth(); idxX++) {
+                int idx = idxY * imagem->getBytes() + idxX * 3;
+                // Coeficientes BT.601 de luminancia perceptual (R, G, B ja convertidos)
+                float lum = data[idx] * 0.299f
+                    + data[idx + 1] * 0.587f
+                    + data[idx + 2] * 0.114f;
+                int bin = (int)lum;
+                if (bin > 255) bin = 255;
+                hist[bin]++;
+            }
+        }
+
+        // --- 2. Acha o valor maximo para normalizar a altura das barras ---
+        int maxVal = 1;
+        for (int i = 0; i < 256; i++)
+            if (hist[i] > maxVal) maxVal = hist[i];
+
+        // --- 3. Desenha fundo do histograma ---
+        CV::color(0.9f, 0.85f, 0.75f); // fundo bege como na referencia
+        CV::rectFill(hx, hy, hx + largura, hy + alturaMax);
+
+        // --- 4. Desenha borda ---
+        CV::color(0, 0, 0);
+        CV::rect(hx, hy, hx + largura, hy + alturaMax);
+
+        // --- 5. Titulo ---
+        CV::color(0, 0, 0);
+        CV::text(hx + 5, hy + alturaMax - 15, "Histograma Luminancia");
+
+        // --- 6. Desenha as barras do histograma ---
+        float barW = largura / 256.0f; // largura de cada barra/bin
+
+        for (int i = 0; i < 256; i++) {
+            float barH = ((float)hist[i] / (float)maxVal) * (alturaMax - 20);
+            float bx = hx + i * barW;
+            float by = hy; // base
+
+            // Barra de luminancia em verde, como na imagem de referencia
+            CV::color(0.0f, 0.8f, 0.0f);
+            CV::rectFill(bx, by, bx + barW, by + barH);
+        }
+
+        // --- 7. Info: Max, Min, Avg ---
+        char info[80];
+        int minVal = 0, avgAcc = 0, count = 0;
+        for (int i = 0; i < 256; i++) {
+            if (hist[i] > 0) { minVal = i; break; }
+        }
+        for (int i = 0; i < 256; i++) {
+            avgAcc += hist[i] * i;
+            count += hist[i];
+        }
+        int avg = (count > 0) ? (avgAcc / count) : 0;
+        int maxPct = (int)((float)maxVal / totalPixels * 100);
+
+        sprintf(info, "Max:%d(%d%%) Min:%d Avg:%d", maxVal, maxPct, minVal, avg);
+        CV::color(0, 0, 0);
+        CV::text(hx + 5, hy + alturaMax + 12, info);
+    }
 
     bool hitClick(int mouseX, int mouseY) {
         if (tipo == 1 || tipo == 4) {
