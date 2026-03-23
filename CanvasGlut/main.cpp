@@ -79,6 +79,7 @@ void polinomio()
         float y = x * x * x - 3 * x + 2;
         CV::point(x * escalaX, y * escalaY);
     }
+    CV::translate(0,0);
 }
 
 void sliderConfig() {

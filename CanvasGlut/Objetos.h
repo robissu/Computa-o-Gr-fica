@@ -97,7 +97,14 @@ public:
             x = mouseX - distX;
             y = mouseY - distY;
         }
-        
+
+        float anguloRad = -90 * (3.14159f / 180.0f);
+        float c = cosf(anguloRad);
+        float s = sinf(anguloRad);
+
+        float meioW = (imagem->getWidth() * escala) / 2.0f;
+        float meioH = (imagem->getHeight() * escala) / 2.0f;
+
         for (int idxY = 0; idxY < imagem->getHeight(); idxY++) {
             for (int idxX = 0; idxX < imagem->getWidth(); idxX++) {
                 int idx = idxY * imagem->getBytes() + idxX * 3;
@@ -111,12 +118,24 @@ public:
 
                     CV::color(y / 255.0 * (0.5), y / 255.0 * (0.5), y / 255.0* (0.5));
                 }
-                
+               
+
+
                 //valor entre 0 e 1,
                 int dimX = idxX * escala;
                 int dimY = idxY * escala;
                 
-                CV::point(x + dimX, y + dimY);
+
+                float relX = dimX - meioW;
+                float relY = dimY - meioH;
+                if (!arrastar) {
+                    CV::point(x + dimX, y + dimY);
+                }
+                else {
+                    float rotX = relX * c - relY * s;
+                    float rotY = relX * s + relY * c;
+                    CV::point(x + meioW + rotX, y + meioH + rotY);
+                }
             }
             
         }
