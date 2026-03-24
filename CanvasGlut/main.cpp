@@ -38,6 +38,7 @@ std::vector<Objetos*> lista;
 Botao* vermelho;
 Botao* verde;
 Botao* azul;
+Botao* lumin;
 
 //se a aplicacao tiver varios botoes, sugiro implementar um manager de botoes.
 int opcao  = 50;//variavel global para selecao do que sera exibido na canvas.
@@ -97,6 +98,7 @@ void configImagem() {
 int Objetos::graficoR = 0;
 int Objetos::graficoG = 0;
 int Objetos::graficoB = 0;
+int Objetos::graficoL = 0;
 
 void checaBotao() {
     if (vermelho->hitClick(mouseX,mouseY)) {
@@ -108,8 +110,11 @@ void checaBotao() {
     else if (azul->hitClick(mouseX, mouseY)) {
         Objetos::graficoB = 1;
     }
+    else if (lumin->hitClick(mouseX, mouseY)) {
+        Objetos::graficoL = 1;
+    }
     else {
-        Objetos::graficoR = Objetos::graficoG = Objetos::graficoB = 0;
+        Objetos::graficoR = Objetos::graficoG = Objetos::graficoB = Objetos::graficoL = 0;
     }
     
 }
@@ -128,7 +133,7 @@ void render()
    vermelho->Render();
    verde->Render();
    azul->Render();
-
+   lumin->Render();
    Sleep(10); //nao eh controle de FPS. Somente um limitador de FPS.
 }
 
@@ -237,7 +242,7 @@ int main(void)
    vermelho = new Botao(100, 400, 80, 30, "Vermelho", 2);
    verde = new Botao(200, 400, 60, 30, "Verde", 3);
    azul = new Botao(300, 400, 60, 30, "Azul", 4);
-
+   lumin = new Botao(400, 400, 60, 30, "Lumin", 0);
 
 
    CV::init(&screenWidth, &screenHeight, "Demo Robson");

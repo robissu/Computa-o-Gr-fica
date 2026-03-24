@@ -11,7 +11,7 @@ class Objetos {
     Bmp *imagem;
     unsigned char* data;
 public:
-    static int graficoR, graficoG, graficoB;
+    static int graficoR, graficoG, graficoB, graficoL;
     Objetos(int tipo, float x, float y, float width, float height, int cor){//retangulo tipo 1
         this->tipo = tipo;
         this->x = x;
@@ -151,19 +151,33 @@ public:
         int histR[256] = { 0 };
         int histG[256] = { 0 };
         int histB[256] = { 0 };
+        int histL[256] = { 0 };
 
         for (int idxY = 0; idxY < imagem->getHeight(); idxY++) {
             for (int idxX = 0; idxX < imagem->getWidth(); idxX++) {
                 int idx = idxY * imagem->getBytes() + idxX * 3;
 
-                histR[data[idx]]++;
-                histG[data[idx+1]]++;
-                histB[data[idx+2]]++;
+                
+                int r = data[idx];
+                int g = data[idx + 1];
+                int b = data[idx + 2];
+
+                histR[r]++;
+                histG[g]++;
+                histB[b]++;
+                
+                int luminancia = (r * 0.3 + g * 0.5 + b * 0.2);
+                if (luminancia > 255) {
+                    luminancia = 255;
+                }
+                histL[luminancia]++;
+            
+
             }
         }
 
         
-        int maxR = 0, maxG = 0, maxB = 0;
+        int maxR = 0, maxG = 0, maxB = 0, maxL =0;
         for (int i = 0; i < 256; i++) {
             if (histR[i] > maxR)
                 maxR = histR[i];
@@ -171,6 +185,8 @@ public:
                 maxG = histG[i];
             if (histB[i] > maxB)
                 maxB = histB[i];
+            if (histL[i] > maxL)
+                maxL = histL[i];
         }
 
 
@@ -209,8 +225,16 @@ public:
             }
         }
         
+        //luminancia
+        if (graficoL) {
+            CV::color(0.5, 0.5, 0.5);
+            for (int i = 0; i < 256; i++) {
+                float xL = pX + normaliz(i, 0, 255.0f, 0) * largura;
+                float hL = normaliz(histL[i], 0, maxL, 0) * altura;
 
-
+                CV::line(xL, pY, xL, pY + hL);
+            }
+        }
     }
 
     bool hitClick(int mouseX, int mouseY) {
