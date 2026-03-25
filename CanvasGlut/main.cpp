@@ -33,7 +33,7 @@ Objetos* retangulo;
 Objetos* sliderChoice;
 Objetos* circulo;
 Objetos* imagem;
-Objetos* imagem2;
+Objetos* checkbox;
 std::vector<Objetos*> lista;
 Botao* vermelho;
 Botao* verde;
@@ -118,6 +118,11 @@ void checaBotao() {
     }
     
 }
+
+void configCheckBox() {
+    checkbox->desenhaBox();
+
+}
 //funcao chamada continuamente. Deve-se controlar o que desenhar por meio de variaveis globais
 //Todos os comandos para desenho na canvas devem ser chamados dentro da render().
 //Deve-se manter essa função com poucas linhas de codigo.
@@ -126,14 +131,18 @@ void render()
    CV::clear(1, 1, 1);
 
    //polinomio();
-   //retanguloConfig();
-   //circleConfig();
+   retanguloConfig();
+   circleConfig();
    sliderConfig();
    configImagem();
+   configCheckBox();
+
    vermelho->Render();
    verde->Render();
    azul->Render();
    lumin->Render();
+
+
    Sleep(10); //nao eh controle de FPS. Somente um limitador de FPS.
 }
 
@@ -189,11 +198,6 @@ void keyboardUp(int key)
    pressTeclado = false;
 }
 
-
-
-
-
-
 //funcao para tratamento de mouse: cliques, movimentos e arrastos
 /*button 0 -> esquerdo || 2 -> direito
 state = 0 -> botao pressMouseionado || 1 -> solto
@@ -214,13 +218,16 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
    }
    if (state == 1) {
        pressMouse = false;
-       retangulo->checaSelecaoRect(mouseX,mouseY);
-       circulo->checaSelecaoCircle(mouseX, mouseY);
-
        checaBotao();
 
        for (auto* obj : lista) {
-           obj->soltaArrast(); // Garanta que essa função faça: arrastar = false;
+           obj->soltaArrast();
+           if (obj->checaSelec(mouseX,mouseY)) {
+               obj->setSelecao(true);
+           }
+           else {
+               obj->setSelecao(false);
+           }
        }
    }
 
@@ -235,6 +242,8 @@ int main(void)
    retangulo = new Objetos(1,50, 100, 50, 100, 4);
    circulo = new Objetos(2, 250, 100, 30, 4);
    imagem = new Objetos(4,arquivo);
+   checkbox = new Objetos(5, 30, 30);
+   lista.push_back(checkbox);
    lista.push_back(slid->getCirc());
    lista.push_back(retangulo);
    lista.push_back(circulo);

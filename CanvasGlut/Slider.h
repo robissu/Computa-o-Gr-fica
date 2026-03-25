@@ -63,7 +63,6 @@ public:
     void circSeleciona(int mouseX, int mouseY, bool pressMouse, std::vector<Objetos*>& lista) {
         circ->desenhaCircle(0);
         if (circ->getArrast() || !Objetos::checaListaArrasto(lista)) {
-            circ->colisaoCirc(mouseX, mouseY, pressMouse);
             if (sent) {
                 circ->dragY(mouseY, sliderY, sliderY + sliderH + (sliderH * (CORESMAX - 1)));
             }
