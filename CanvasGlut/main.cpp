@@ -238,7 +238,7 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
 int main(void)
 {
    
-   slid = new Slider(20, 30, 220, 30, 20, 0);
+   slid = new Slider(30, 220, 30, 20, 0);
    retangulo = new Objetos(1,50, 100, 50, 100, 4);
    circulo = new Objetos(2, 250, 100, 30, 4);
    imagem = new Objetos(4,arquivo);

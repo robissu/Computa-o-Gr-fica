@@ -129,7 +129,8 @@ public:
                 else {
                     float y = data[idx] * 0.3 + data[idx + 1] * 0.5 + data[idx + 2] * 0.2;//cinza
 
-                    CV::color(y / 255.0 * (0.5), y / 255.0 * (0.5), y / 255.0* (0.5));
+                    CV::color(y / 255.0 , y / 255.0, y / 255.0);
+                    //CV::color(0, 0 ,y/ 255.0);
                 }
                
 

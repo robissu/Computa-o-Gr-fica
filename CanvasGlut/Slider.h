@@ -29,8 +29,8 @@ class Slider {
     int sent;
     Objetos* circ;
 public:
-    Slider(float raio, float initX, float initY, float width, float height, int sentido) {
-        circ = new Objetos(3, initX + width/2, initY + height/2, raio);
+    Slider(float initX, float initY, float width, float height, int sentido) {
+        circ = new Objetos(3, initX/2, initY, height);
         sliderX = initX;
         sliderY = initY;
         sliderW = width;
@@ -105,7 +105,7 @@ public:
         {
             float t = i / largura;
 
-            // O cálculo busca na matriz usando os dois índices calculados
+            // 3. O cálculo busca na matriz usando os dois índices calculados
             float r = Colors1[idxInicio][0] + t * (Colors1[idxFim][0] - Colors1[idxInicio][0]);
             float g = Colors1[idxInicio][1] + t * (Colors1[idxFim][1] - Colors1[idxInicio][1]);
             float b = Colors1[idxInicio][2] + t * (Colors1[idxFim][2] - Colors1[idxInicio][2]);
