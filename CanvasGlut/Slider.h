@@ -4,7 +4,7 @@
 #include "gl_canvas2d.h"
 #include "Objetos.h"
 
-#define CORESMAX 14
+#define MAX 14
 
 float Colors1[14][3] =
 {
@@ -26,16 +26,17 @@ float Colors1[14][3] =
 
 class Slider {
     float sliderX, sliderY, sliderW, sliderH;
-    int sent;
+    int sent, tipo;
     Objetos* circ;
 public:
-    Slider(float initX, float initY, float width, float height, int sentido) {
-        circ = new Objetos(3, initX+width/2, initY+height/2, height);
+    Slider(float initX, float initY, float width, float height, int sentido, int _tipo) {
+        circ = new Objetos(initX+width/2, initY+height/2, height);
         sliderX = initX;
         sliderY = initY;
         sliderW = width;
         sliderH = height;
         sent = sentido;
+        tipo = _tipo;
     }
 
     Objetos* getCirc() {
@@ -46,16 +47,22 @@ public:
         //desenha barra de apoio
         int idx;
         if (sent) {
-            for (idx = 0; idx < CORESMAX; idx++)
+            for (idx = 0; idx < MAX; idx++)
             {
-                CV::color(idx);
+                if (tipo)
+                    CV::color(idx);
+                else
+                    CV::color(1);
                 CV::rectFill(sliderX, sliderY + (sliderH * idx), sliderX + sliderW, sliderY + sliderH + (sliderH * idx));
             }
         }
         else {
-            for (idx = 0; idx < CORESMAX; idx++)
+            for (idx = 0; idx < MAX; idx++)
             {
-                CV::color(idx);
+                if (tipo)
+                    CV::color(idx);
+                else
+                    CV::color(1);
                 CV::rectFill(sliderX + (sliderW * idx), sliderY, sliderX + sliderW + (sliderW * idx), sliderY + sliderH);
             }
         }
@@ -64,10 +71,10 @@ public:
         circ->desenhaCircle(0);
         if (circ->getArrast() || !Objetos::checaListaArrasto(lista)) {
             if (sent) {
-                circ->dragY(mouseY, sliderY, sliderY + sliderH + (sliderH * (CORESMAX - 1)));
+                circ->dragY(mouseY, sliderY, sliderY + sliderH + (sliderH * (MAX - 1)));
             }
             else {
-                circ->dragX(mouseX, sliderX, sliderX + sliderW + (sliderW * (CORESMAX - 1)));
+                circ->dragX(mouseX, sliderX, sliderX + sliderW + (sliderW * (MAX - 1)));
             }
         }
     }
@@ -75,7 +82,7 @@ public:
     float normaCirc() {
         //calcula posicao do circulo na barra
         if (sent) {
-            float alturaTotalBarra = sliderH * CORESMAX;
+            float alturaTotalBarra = sliderH * MAX;
             float deltaY = circ->getY() - sliderY;
             float t = deltaY / alturaTotalBarra;
             if (t < 0)t = 0;
@@ -83,7 +90,7 @@ public:
             return (t);
         }
         else {
-            float larguraTotalBarra = sliderW * CORESMAX;
+            float larguraTotalBarra = sliderW * MAX;
             float deltaX = circ->getX() - sliderX;
             float t = deltaX / larguraTotalBarra;
             if (t < 0)t = 0;
@@ -98,14 +105,14 @@ public:
         Vector2 v1, v2;
         float largura = 350;
 
-        indexSelecionado = indexSelecionado * CORESMAX;
+        indexSelecionado = indexSelecionado * MAX;
         int idxFim = indexSelecionado;
         int idxInicio = indexSelecionado - 1;
         for (float i = 0; i < largura; i++)
         {
             float t = i / largura;
 
-            // 3. O cálculo busca na matriz usando os dois índices calculados
+            // O cálculo busca na matriz usando os dois índices calculados
             float r = Colors1[idxInicio][0] + t * (Colors1[idxFim][0] - Colors1[idxInicio][0]);
             float g = Colors1[idxInicio][1] + t * (Colors1[idxFim][1] - Colors1[idxInicio][1]);
             float b = Colors1[idxInicio][2] + t * (Colors1[idxFim][2] - Colors1[idxInicio][2]);

@@ -34,11 +34,12 @@ Objetos* sliderChoice;
 Objetos* circulo;
 Objetos* imagem;
 Objetos* checkbox;
-std::vector<Objetos*> lista;
+std::vector<Objetos*> listaObjetos;
 Botao* vermelho;
 Botao* verde;
 Botao* azul;
 Botao* lumin;
+std::vector<Botao*> listaBotao;
 
 //se a aplicacao tiver varios botoes, sugiro implementar um manager de botoes.
 int opcao  = 50;//variavel global para selecao do que sera exibido na canvas.
@@ -85,7 +86,7 @@ void polinomio()
 
 void sliderConfig() {
     slid->barraDeslize();
-    slid->circSeleciona(mouseX,mouseY, pressMouse, lista);
+    slid->circSeleciona(mouseX,mouseY, pressMouse, listaObjetos);
     //slid->retanguloDegrade(slid->normaCirc());
 }
 
@@ -94,6 +95,14 @@ void configImagem() {
     imagem->escalaImagem(escala, mouseX, mouseY);
     imagem->desenhaHistograma(50,10, 256, 100);
 }
+
+void configBotao() {
+    vermelho->Render();
+    verde->Render();
+    azul->Render();
+    lumin->Render();
+}
+
 
 int Objetos::graficoR = 0;
 int Objetos::graficoG = 0;
@@ -116,12 +125,10 @@ void checaBotao() {
     else {
         Objetos::graficoR = Objetos::graficoG = Objetos::graficoB = Objetos::graficoL = 0;
     }
-    
 }
 
 void configCheckBox() {
     checkbox->desenhaBox();
-
 }
 //funcao chamada continuamente. Deve-se controlar o que desenhar por meio de variaveis globais
 //Todos os comandos para desenho na canvas devem ser chamados dentro da render().
@@ -136,11 +143,8 @@ void render()
    sliderConfig();
    configImagem();
    configCheckBox();
-
-   vermelho->Render();
-   verde->Render();
-   azul->Render();
-   lumin->Render();
+   configBotao();
+   
 
 
    Sleep(10); //nao eh controle de FPS. Somente um limitador de FPS.
@@ -156,7 +160,6 @@ void keyboard(int key)
    {
       opcao = key;
    }
-
    if (pressTeclado) {
        switch (key)
        {
@@ -211,8 +214,8 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
    //printf("\n COORDENADAS MOUSE-> X: %d Y: %d", mouseX, mouseY);
    if (state == 0) {
        pressMouse = true;
-       if (!Objetos::checaListaArrasto(lista)) {
-           Objetos::checaListaColisao(mouseX, mouseY, lista);
+       if (!Objetos::checaListaArrasto(listaObjetos)) {
+           Objetos::checaListaColisao(mouseX, mouseY, listaObjetos);
        }
 
    }
@@ -220,7 +223,16 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
        pressMouse = false;
        checaBotao();
 
-       for (auto* obj : lista) {
+       for (auto* btn : listaBotao) {
+           if (btn->hitClick(mouseX,mouseY)) {
+               btn->setPress(true);
+           }
+           else {
+               btn->setPress(false);
+           }
+       }
+
+       for (auto* obj : listaObjetos) {
            obj->soltaArrast();
            if (obj->checaSelec(mouseX,mouseY)) {
                obj->setSelecao(true);
@@ -238,21 +250,26 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
 int main(void)
 {
    
-   slid = new Slider(30, 220, 30, 20, 0);
-   retangulo = new Objetos(1,50, 100, 50, 100, 4);
-   circulo = new Objetos(2, 250, 100, 30, 4);
-   imagem = new Objetos(4,arquivo);
-   checkbox = new Objetos(5, 30, 30);
-   lista.push_back(checkbox);
-   lista.push_back(slid->getCirc());
-   lista.push_back(retangulo);
-   lista.push_back(circulo);
-   lista.push_back(imagem);
+   slid = new Slider(30, 220, 30, 10, 0, 0);
+   retangulo = new Objetos(50, 100, 50, 100, 4);
+   circulo = new Objetos( 250, 100, 30, 4);
+   imagem = new Objetos(arquivo);
+   checkbox = new Objetos(30, 30);
+   listaObjetos.push_back(checkbox);
+   listaObjetos.push_back(slid->getCirc());
+   listaObjetos.push_back(retangulo);
+   listaObjetos.push_back(circulo);
+   listaObjetos.push_back(imagem);
+
+   //------------------------------------------------------
    vermelho = new Botao(100, 400, 80, 30, "Vermelho", 2);
    verde = new Botao(200, 400, 60, 30, "Verde", 3);
    azul = new Botao(300, 400, 60, 30, "Azul", 4);
    lumin = new Botao(400, 400, 60, 30, "Lumin", 0);
-
+   listaBotao.push_back(vermelho);
+   listaBotao.push_back(verde);
+   listaBotao.push_back(azul);
+   listaBotao.push_back(lumin);
 
    CV::init(&screenWidth, &screenHeight, "Demo Robson");
    CV::run();

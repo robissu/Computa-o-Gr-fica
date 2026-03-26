@@ -11,6 +11,7 @@ class Botao{
   float altura, largura, x, y;
   char label[100];
   int cor;
+  bool press;
 public:
   Botao(float _x, float _y, float _larg, float _alt, const char *_label, int _cor)
   {
@@ -20,6 +21,19 @@ public:
      y = _y;
      cor = _cor;
      strcpy(label, _label);
+     press = false;
+  }
+
+  const char* getLabel() {
+      return label; 
+  }
+
+  bool getPress() {
+      return press;
+  }
+
+  void setPress(bool set) {
+      press = set;
   }
 
   void Render()
@@ -35,11 +49,11 @@ public:
   {
       if( mx >= x && mx <= (x + largura) && my >= y && my <= (y + altura) )
       {
+          press = true;
           return true;
       }
       return false;
   }
-
 };
 
 #endif

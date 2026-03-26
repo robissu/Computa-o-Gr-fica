@@ -12,8 +12,8 @@ class Objetos {
     unsigned char* data;
 public:
     static int graficoR, graficoG, graficoB, graficoL;
-    Objetos(int tipo, float x, float y, float width, float height, int cor){//retangulo tipo 1
-        this->tipo = tipo;
+    Objetos(float x, float y, float width, float height, int cor){//retangulo tipo 1
+        this->tipo = 1;
         this->x = x;
         this->y = y;
         this->width = width;
@@ -25,8 +25,8 @@ public:
         this->distX = 0;
         this->distY = 0;
     }
-    Objetos(int tipo, float x, float y, float raio, int cor) {//circulo tipo 2
-        this->tipo = tipo;
+    Objetos(float x, float y, float raio, int cor) {//circulo tipo 2
+        this->tipo = 2;
         this->x = x;
         this->y = y;
         this->raio = raio;
@@ -37,8 +37,8 @@ public:
         this->distX = 0;
         this->distY = 0;
     }
-    Objetos(int tipo, float x, float y, float raio) {//circulo sem cor tipo 3
-        this->tipo = tipo;
+    Objetos(float x, float y, float raio) {//circulo sem cor tipo 3
+        this->tipo = 3;
         this->x = x;
         this->y = y;
         this->raio = raio;
@@ -49,8 +49,8 @@ public:
         this->distX = 0;
         this->distY = 0;
     }
-    Objetos(int tipo, char* nome) {//imagem tipo 4
-        this->tipo = tipo;
+    Objetos(char* nome) {//imagem tipo 4
+        this->tipo = 4;
         imagem = new Bmp(nome);
         imagem->convertBGRtoRGB();
         data = imagem->getImage();
@@ -59,8 +59,8 @@ public:
         width = (float)imagem->getWidth();
         height = (float)imagem->getHeight();
     }
-    Objetos(int tipo, float x, float y) {//checkbox tipo 5
-        this->tipo = tipo;
+    Objetos(float x, float y) {//checkbox tipo 5
+        this->tipo = 5;
         this->x = x;
         this->y = y;
         this->width = 20;
