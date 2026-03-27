@@ -11,7 +11,6 @@ class Objetos {
     Bmp *imagem;
     unsigned char* data;
 public:
-    static int graficoR, graficoG, graficoB, graficoL;
     Objetos(float x, float y, float width, float height, int cor){//retangulo tipo 1
         this->tipo = 1;
         this->x = x;
@@ -101,11 +100,15 @@ public:
         return y;
     }
 
+    int getTipo(){
+        return tipo;
+    }
+
     void soltaArrast() {
         arrastar = false;
     }
 
-    void escalaImagem(float escala, int mouseX, int mouseY) {
+    void editImagem(float escala, int mouseX, int mouseY, Botao * rot) {
         if (arrastar) {
             x = mouseX - distX;
             y = mouseY - distY;
@@ -142,7 +145,7 @@ public:
 
                 float relX = dimX - meioW;
                 float relY = dimY - meioH;
-                if (!arrastar) {
+                if (!rot->getPress()) {
                     CV::point(x + dimX, y + dimY);
                 }
                 else {
@@ -157,16 +160,15 @@ public:
         height = escala * imagem->getHeight();
     }
 
-
     void setSelecao(bool selec) {
-        this->selecao = selec;
+        selecao = selec;
     }
 
     float normaliz(float v, float minV, float max, float min) {
         return (v - minV) / (max - min);
     }
 
-    void desenhaHistograma(float pX, float pY, float largura, float altura) {
+    void desenhaHistograma(float pX, float pY, float largura, float altura, std::vector<Botao*>& botoes) {
         int histR[256] = { 0 };
         int histG[256] = { 0 };
         int histB[256] = { 0 };
@@ -196,7 +198,10 @@ public:
         }
 
         
-        int maxR = 0, maxG = 0, maxB = 0, maxL =0;
+        int maxR = 0;
+        int maxG = 0;
+        int maxB = 0;
+        int maxL = 0;
         for (int i = 0; i < 256; i++) {
             if (histR[i] > maxR)
                 maxR = histR[i];
@@ -209,49 +214,41 @@ public:
         }
 
 
-        //vermelho
-        if (graficoR) {
-            CV::color(1, 0, 0);
-            for (int i = 0; i < 256; i++) {
-                float xR = pX + normaliz(i, 0, 255.0f, 0) * largura;
-                float hR = normaliz(histR[i], 0, maxR, 0) * altura;
+        for (auto* btn : botoes) {
+            if (btn->getPress()) {
 
-                CV::line(xR, pY, xR, pY + hR);
-            }
-        }
-        
-
-        //verde
-        if (graficoG) {
-            CV::color(0, 1, 0);
-            for (int i = 0; i < 256; i++) {
-                float xG = pX + normaliz(i, 0, 255.0f, 0) * largura;
-                float hG = normaliz(histG[i], 0, maxG, 0) * altura;
-
-                CV::line(xG, pY, xG, pY + hG);
-            }
-        }
-        
-
-        //AZUL
-        if (graficoB) {
-            CV::color(0, 0, 1);
-            for (int i = 0; i < 256; i++) {
-                float xB = pX + normaliz(i, 0, 255.0f, 0) * largura;
-                float hB = normaliz(histB[i], 0, maxB, 0) * altura;
-
-                CV::line(xB, pY, xB, pY + hB);
-            }
-        }
-        
-        //luminancia
-        if (graficoL) {
-            CV::color(0.5, 0.5, 0.5);
-            for (int i = 0; i < 256; i++) {
-                float xL = pX + normaliz(i, 0, 255.0f, 0) * largura;
-                float hL = normaliz(histL[i], 0, maxL, 0) * altura;
-
-                CV::line(xL, pY, xL, pY + hL);
+                if (!strcmp(btn->getLabel(), "Vermelho")) {
+                    CV::color(1, 0, 0);
+                    for (int i = 0; i < 256; i++) {
+                        float xR = pX + ((float)i / 255.0f) * largura;
+                        float hR = ((float)histR[i] / maxR) * altura;
+                        CV::line(xR, pY, xR, pY + hR);
+                    }
+                }
+                if (!strcmp(btn->getLabel(), "Verde")) {
+                    CV::color(0, 1, 0);
+                    for (int i = 0; i < 256; i++) {
+                        float xG = pX + ((float)i / 255.0f) * largura;
+                        float hG = ((float)histG[i] / maxG) * altura;
+                        CV::line(xG, pY, xG, pY + hG);
+                    }
+                }
+                if (!strcmp(btn->getLabel(), "Azul")) {
+                    CV::color(0, 0, 1);
+                    for (int i = 0; i < 256; i++) {
+                        float xB = pX + ((float)i / 255.0f) * largura;
+                        float hB = ((float)histB[i] / maxB) * altura;
+                        CV::line(xB, pY, xB, pY + hB);
+                    }
+                }
+                if (!strcmp(btn->getLabel(), "Lumin")) {
+                    CV::color(0.5, 0.5, 0.5);
+                    for (int i = 0; i < 256; i++) {
+                        float xL = pX + ((float)i / 255.0f) * largura;
+                        float hL = ((float)histL[i] / maxL) * altura;
+                        CV::line(xL, pY, xL, pY + hL);
+                    }
+                }
             }
         }
     }
@@ -303,7 +300,6 @@ public:
         }
         CV::color(cor);
         CV::rect(this->x, this->y, this->x + this->width, this->y + this->height);
-
     }
 
     void desenhaRect(float x, float y, float width, float height, int cor) {
@@ -325,6 +321,7 @@ public:
         CV::color(cor);
         CV::circleFill(this->x, this->y, this->raio, 50);
     }
+
     void desenhaCircle(float x, float y, float raio, int cor) {
         if (selecao)
             cor = 3;
@@ -361,6 +358,7 @@ public:
             }     
         }
     }
+
     void dragX(int mouseX, int sliderMin, int sliderMax) {
         if (arrastar) {
             if (mouseX >= sliderMin && mouseX < sliderMax) {
@@ -369,7 +367,6 @@ public:
         }
     }
     
-
     bool rectBorda(int mouseX, int mouseY) {
         return (mouseX >= x && mouseX <= x + width
             && mouseY >= y && mouseY <= y + height);
@@ -408,8 +405,6 @@ public:
             return checaSelecaoCircle(mouseX, mouseY);
         }
     }
-
-
 
     void mexer(int direcao) {
         if (selecao) {

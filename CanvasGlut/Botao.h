@@ -32,8 +32,8 @@ public:
       return press;
   }
 
-  void setPress(bool set) {
-      press = set;
+  void alterna() {
+      press = !press;
   }
 
   void Render()
@@ -49,7 +49,6 @@ public:
   {
       if( mx >= x && mx <= (x + largura) && my >= y && my <= (y + altura) )
       {
-          press = true;
           return true;
       }
       return false;

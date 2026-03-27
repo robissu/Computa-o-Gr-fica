@@ -25,7 +25,7 @@
 #pragma warning(disable:4996)
 
 //largura e altura inicial da tela . Alteram com o redimensionamento de tela.
-int screenWidth = 500, screenHeight = 500;
+int screenWidth = 800, screenHeight = 800;
 
 char arquivo[] = { "tank.bmp" };
 Slider* slid;
@@ -39,11 +39,11 @@ Botao* vermelho;
 Botao* verde;
 Botao* azul;
 Botao* lumin;
+Botao* rotaciona;
+Botao* addRect;
 std::vector<Botao*> listaBotao;
 
-//se a aplicacao tiver varios botoes, sugiro implementar um manager de botoes.
-int opcao  = 50;//variavel global para selecao do que sera exibido na canvas.
-int mouseX, mouseY; //variaveis globais do mouse para poder exibir dentro da render().
+int mouseX, mouseY; 
 bool pressMouse = false;
 bool pressTeclado = false;
 int direcaoTeclado = -1;
@@ -92,44 +92,48 @@ void sliderConfig() {
 
 void configImagem() {
     float escala = slid->normaCirc();
-    imagem->escalaImagem(escala, mouseX, mouseY);
-    imagem->desenhaHistograma(50,10, 256, 100);
+    imagem->editImagem(escala, mouseX, mouseY, rotaciona);
+    imagem->desenhaHistograma(50,10, 256, 100, listaBotao);
 }
 
 void configBotao() {
-    vermelho->Render();
-    verde->Render();
-    azul->Render();
-    lumin->Render();
-}
-
-
-int Objetos::graficoR = 0;
-int Objetos::graficoG = 0;
-int Objetos::graficoB = 0;
-int Objetos::graficoL = 0;
-
-void checaBotao() {
-    if (vermelho->hitClick(mouseX,mouseY)) {
-        Objetos::graficoR = 1;
+    for (auto* btn : listaBotao) {
+        btn->Render();
     }
-    else if (verde->hitClick(mouseX, mouseY)) {
-        Objetos::graficoG = 1;
-    }
-    else if (azul->hitClick(mouseX, mouseY)) {
-        Objetos::graficoB = 1;
-    }
-    else if (lumin->hitClick(mouseX, mouseY)) {
-        Objetos::graficoL = 1;
-    }
-    else {
-        Objetos::graficoR = Objetos::graficoG = Objetos::graficoB = Objetos::graficoL = 0;
+    if (addRect->getPress()) {
+        listaObjetos.push_back(new Objetos(50, 100, 50, 100, 4));
+        addRect->alterna();
     }
 }
+
 
 void configCheckBox() {
     checkbox->desenhaBox();
 }
+
+void desenhaObjetos() {
+    for (auto* obj : listaObjetos) {
+        if (obj->getTipo() == 1) {
+            obj->desenhaRect();
+            if (obj->getArrast()) {
+                obj->drag(mouseX, mouseY);
+            }
+            if (pressTeclado) {
+                obj->mexer(direcaoTeclado);
+            }
+        }
+        else if (obj->getTipo() == 2) {
+            circulo->desenhaCircle();
+            if (circulo->getArrast()) {
+                circulo->drag(mouseX, mouseY);
+            }
+            if (pressTeclado) {
+                circulo->mexer(direcaoTeclado);
+            }
+        }
+    }
+}
+
 //funcao chamada continuamente. Deve-se controlar o que desenhar por meio de variaveis globais
 //Todos os comandos para desenho na canvas devem ser chamados dentro da render().
 //Deve-se manter essa função com poucas linhas de codigo.
@@ -138,59 +142,42 @@ void render()
    CV::clear(1, 1, 1);
 
    //polinomio();
-   retanguloConfig();
-   circleConfig();
+   //retanguloConfig();
+   //circleConfig();
+   desenhaObjetos();
    sliderConfig();
    configImagem();
    configCheckBox();
    configBotao();
    
-
-
-   Sleep(10); //nao eh controle de FPS. Somente um limitador de FPS.
+   Sleep(10); //limitador FPS
 }
 
 
-//funcao chamada toda vez que uma tecla for pressMouseionada.
+//funcao chamada toda vez que uma tecla for pressionada.
 void keyboard(int key)
 {
    //printf("\nTecla: %d" , key);
    pressTeclado = true;
-   if( key < 200 )
-   {
-      opcao = key;
-   }
-   if (pressTeclado) {
-       switch (key)
-       {
-       case 27://esq
+   switch (key){
+        case 27://Esq
            exit(0);
-           break;
-
-           
-       case 200://esquerda
+           break;  
+        case 200://esquerda
            direcaoTeclado = 0;
            break;
-
-           
-       case 201://cima
+        case 201://cima
            direcaoTeclado = 1;
            break;
-
-           
-       case 202://direita
+        case 202://direita
            direcaoTeclado = 2;
            break;
-
-           
-       case 203://baixo
+        case 203://baixo
            direcaoTeclado = 3;
            break;
-       default:
+        default:
            direcaoTeclado = -1;
            break;
-       }
-       
    }
 }
 
@@ -221,14 +208,10 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
    }
    if (state == 1) {
        pressMouse = false;
-       checaBotao();
 
        for (auto* btn : listaBotao) {
            if (btn->hitClick(mouseX,mouseY)) {
-               btn->setPress(true);
-           }
-           else {
-               btn->setPress(false);
+               btn->alterna();
            }
        }
 
@@ -266,10 +249,14 @@ int main(void)
    verde = new Botao(200, 400, 60, 30, "Verde", 3);
    azul = new Botao(300, 400, 60, 30, "Azul", 4);
    lumin = new Botao(400, 400, 60, 30, "Lumin", 0);
+   rotaciona = new Botao(10, 400, 60, 30, "Rot 90", 0);
+   addRect = new Botao(100, 600, 90, 30, "ADD rect", 0);
    listaBotao.push_back(vermelho);
    listaBotao.push_back(verde);
    listaBotao.push_back(azul);
    listaBotao.push_back(lumin);
+   listaBotao.push_back(rotaciona);
+   listaBotao.push_back(addRect);
 
    CV::init(&screenWidth, &screenHeight, "Demo Robson");
    CV::run();
