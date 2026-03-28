@@ -5,7 +5,8 @@
 #include "Bmp.h"
 
 class Objetos {
-    float x, y, width, height, raio, distX, distY, vel;
+    float x, y, width, height, raio, distX, distY, vel, angulo;
+    float escala = 1.0f;
     int cor, tipo;
     bool arrastar, selecao;
     Bmp *imagem;
@@ -56,8 +57,11 @@ public:
         data = imagem->getImage();
         x = 0;
         y = 0;
+        this->vel = 5;
+        this->selecao = false;
         width = (float)imagem->getWidth();
         height = (float)imagem->getHeight();
+        angulo = 0;
     }
 
     bool getArrast() {
@@ -96,15 +100,22 @@ public:
         arrastar = false;
     }
 
-    void editImagem(float escala, int mouseX, int mouseY, Botao * rot) {
+    void rotacionar(float graus) {
+        angulo += graus * (3.14159f / 180.0f);
+    }
+
+    void editImagem(float escalaSlider, int mouseX, int mouseY) {
         if (arrastar) {
             x = mouseX - distX;
             y = mouseY - distY;
         }
 
-        float anguloRad = -90 * (3.14159f / 180.0f);
-        float c = cosf(anguloRad);
-        float s = sinf(anguloRad);
+        if (selecao) {
+            this->escala = escalaSlider;
+        }
+
+        float c = cosf(angulo);
+        float s = sinf(angulo);
 
         float meioW = (imagem->getWidth() * escala) / 2.0f;
         float meioH = (imagem->getHeight() * escala) / 2.0f;
@@ -124,20 +135,16 @@ public:
                     //CV::color(0, 0 ,y/ 255.0);
                 }
 
-                //valor entre 0 e 1,
+                //valor escala entre 0 e 1,
                 int dimX = idxX * escala;
                 int dimY = idxY * escala;
 
+                //calcula a translacao para o centro da imagem a fim de rotacionar ela em relacao ao proprio centro
                 float relX = dimX - meioW;
                 float relY = dimY - meioH;
-                if (!rot->getPress()) {
-                    CV::point(x + dimX, y + dimY);
-                }
-                else {
-                    float rotX = relX * c - relY * s;
-                    float rotY = relX * s + relY * c;
-                    CV::point(x + meioW + rotX, y + meioH + rotY);
-                }
+                float rotX = relX * c - relY * s;
+                float rotY = relX * s + relY * c;
+                CV::point(x + meioW + rotX, y + meioH + rotY);
             }
             
         }
@@ -266,50 +273,39 @@ public:
         }
     }
 
-    void desenhaRect() {
-        if (selecao)
+    void desenhaRect(float escalaSlider) {
+        if (selecao) {
+            this->escala = escalaSlider;
             cor = 3;
+        }
         else {
             cor = 4;
+
         }
+        float wEscala = this->width * escala;
+        float hEscala = this->height * escala;
+
         CV::color(cor);
-        CV::rectFill(this->x, this->y, this->x + this->width, this->y + this->height);
+        CV::rectFill(this->x, this->y, this->x + wEscala, this->y + hEscala);
+       
 
     }
 
-   
 
-    void desenhaRect(float x, float y, float width, float height, int cor) {
-        if (selecao)
+    void desenhaCircle(float escalaSlider) {
+        if (selecao) {
+            this->escala = escalaSlider;
             cor = 3;
+        }
         else {
             cor = 4;
         }
+        float rEscala = this->raio * this->escala;
         CV::color(cor);
-        CV::rectFill(x, y, x+width, y+height);
+        CV::circleFill(this->x, this->y, rEscala, 50);
     }
 
     void desenhaCircle() {
-        if (selecao)
-            cor = 3;
-        else {
-            cor = 4;
-        }
-        CV::color(cor);
-        CV::circleFill(this->x, this->y, this->raio, 50);
-    }
-
-    void desenhaCircle(float x, float y, float raio, int cor) {
-        if (selecao)
-            cor = 3;
-        else {
-            cor = 4;
-        }
-        CV::color(cor);
-        CV::circleFill(x, y, raio, 50);
-    }
-
-    void desenhaCircle(int cor) {
         CV::color(0);
         CV::circle(this->x, this->y, this->raio, 50);
     }
@@ -345,15 +341,18 @@ public:
     }
     
     bool rectBorda(int mouseX, int mouseY) {
-        return (mouseX >= x && mouseX <= x + width
-            && mouseY >= y && mouseY <= y + height);
+        float wAtual = this->width * this->escala;
+        float hAtual = this->height * this->escala;
+        return (mouseX >= x && mouseX <= x + wAtual
+            && mouseY >= y && mouseY <= y + hAtual);
     }
 
     bool circBorda(int mouseX, int mouseY) {
+        float rAtual = this->raio * this->escala;
         float difX = mouseX - x;
         float difY = mouseY - y;
         float quad = (difX * difX) + (difY * difY);
-        return (quad <= (raio * raio));
+        return (quad <= (rAtual * rAtual));
     }
 
     bool checaSelecaoRect(int mouseX, int mouseY) {
@@ -375,12 +374,13 @@ public:
     }
 
     bool checaSelec(int mouseX, int mouseY) {
-        if (tipo == 1 || tipo == 5) {
+        if (tipo == 1 || tipo == 5 || tipo == 4) {
             return checaSelecaoRect(mouseX, mouseY);
         }
         else if (tipo == 2 || tipo == 3) {
             return checaSelecaoCircle(mouseX, mouseY);
         }
+        return false;
     }
 
     void mexer(int direcao) {

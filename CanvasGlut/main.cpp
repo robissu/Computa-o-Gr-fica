@@ -72,7 +72,7 @@ void sliderConfig() {
 
 void configImagem() {
     float escala = slid->normaCirc();
-    imagem->editImagem(escala, mouseX, mouseY, rotaciona);
+    imagem->editImagem(escala, mouseX, mouseY);
     imagem->desenhaHistograma(50,10, 256, 100, listaBotao);
 }
 
@@ -84,6 +84,10 @@ void qualBotao() {
     else if (addCirc->getPress()) {
         listaObjetos.push_back(new Objetos(250 + (listaObjetos.size() * 5), 100, 30, 4));
         addCirc->alterna();
+    }
+    else if (rotaciona->getPress()) {
+        imagem->rotacionar(-90);//- para sentido horario e + para sentido anti horario
+        rotaciona->alterna();
     }
     else if (removObj->getPress()) {
         if (!listaObjetos.empty()) {
@@ -104,9 +108,11 @@ void configBotao() {
 }
 
 void desenhaObjetos() {
+    float vEscala = slid->normaCirc();
+
     for (auto* obj : listaObjetos) {
         if (obj->getTipo() == 1) {
-            obj->desenhaRect();
+            obj->desenhaRect(vEscala);
             if (obj->getArrast()) {
                 obj->drag(mouseX, mouseY);
             }
@@ -115,7 +121,7 @@ void desenhaObjetos() {
             }
         }
         else if (obj->getTipo() == 2) {
-            obj->desenhaCircle();
+            obj->desenhaCircle(vEscala);
             if (obj->getArrast()) {
                 obj->drag(mouseX, mouseY);
             }
@@ -123,9 +129,12 @@ void desenhaObjetos() {
                 obj->mexer(direcaoTeclado);
             }
         }
-        else if (obj->getTipo() == 3) {
-            imagem->editImagem(slid->normaCirc(), mouseX, mouseY, rotaciona);
+        else if (obj->getTipo() == 4) {
+            imagem->editImagem(slid->normaCirc(), mouseX, mouseY);
             imagem->desenhaHistograma(50, 10, 256, 100, listaBotao);
+            if (pressTeclado) {
+                obj->mexer(direcaoTeclado);
+            }
         }
     }
 }
@@ -225,7 +234,7 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
 int main(void)
 {
    
-   slid = new Slider(30, 220, 30, 10, 0, 0);
+   slid = new Slider(30, 220, 30, 10, 0, 1);
    imagem = new Objetos(arquivo);
    listaObjetos.push_back(slid->getCirc());
    listaObjetos.push_back(imagem);

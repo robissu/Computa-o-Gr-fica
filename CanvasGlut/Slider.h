@@ -68,7 +68,7 @@ public:
         }
     }
     void circSeleciona(int mouseX, int mouseY, bool pressMouse, std::vector<Objetos*>& lista) {
-        circ->desenhaCircle(0);
+        circ->desenhaCircle();
         if (circ->getArrast() || !Objetos::checaListaArrasto(lista)) {
             if (sent) {
                 circ->dragY(mouseY, sliderY, sliderY + sliderH + (sliderH * (MAX - 1)));
