@@ -10,6 +10,7 @@ class Objetos {
     bool arrastar, selecao;
     Bmp *imagem;
     unsigned char* data;
+    
 public:
     Objetos(float x, float y, float width, float height, int cor){//retangulo tipo 1
         this->tipo = 1;
@@ -36,7 +37,7 @@ public:
         this->distX = 0;
         this->distY = 0;
     }
-    Objetos(float x, float y, float raio) {//circulo sem cor tipo 3
+    Objetos(float x, float y, float raio) {//circulo slider tipo 3
         this->tipo = 3;
         this->x = x;
         this->y = y;
@@ -57,19 +58,6 @@ public:
         y = 0;
         width = (float)imagem->getWidth();
         height = (float)imagem->getHeight();
-    }
-    Objetos(float x, float y) {//checkbox tipo 5
-        this->tipo = 5;
-        this->x = x;
-        this->y = y;
-        this->width = 20;
-        this->height = 20;
-        this->cor = 0;
-        this->vel = 5;
-        this->arrastar = false;
-        this->selecao = false;
-        this->distX = 0;
-        this->distY = 0;
     }
 
     bool getArrast() {
@@ -135,13 +123,10 @@ public:
                     CV::color(y / 255.0 , y / 255.0, y / 255.0);
                     //CV::color(0, 0 ,y/ 255.0);
                 }
-               
-
 
                 //valor entre 0 e 1,
                 int dimX = idxX * escala;
                 int dimY = idxY * escala;
-                
 
                 float relX = dimX - meioW;
                 float relY = dimY - meioH;
@@ -292,15 +277,7 @@ public:
 
     }
 
-    void desenhaBox() {
-        if (selecao) {
-            CV::color(cor);
-            CV::line(x, y, x + width, y + height);
-            CV::line(x+width, y, x, y + height);
-        }
-        CV::color(cor);
-        CV::rect(this->x, this->y, this->x + this->width, this->y + this->height);
-    }
+   
 
     void desenhaRect(float x, float y, float width, float height, int cor) {
         if (selecao)

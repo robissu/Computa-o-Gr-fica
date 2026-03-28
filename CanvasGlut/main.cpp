@@ -27,47 +27,27 @@
 //largura e altura inicial da tela . Alteram com o redimensionamento de tela.
 int screenWidth = 800, screenHeight = 800;
 
-char arquivo[] = { "tank.bmp" };
+char arquivo[] = { "gremio.bmp" };
 Slider* slid;
-Objetos* retangulo;
 Objetos* sliderChoice;
-Objetos* circulo;
 Objetos* imagem;
-Objetos* checkbox;
 std::vector<Objetos*> listaObjetos;
+//--------------------------------------------
 Botao* vermelho;
 Botao* verde;
 Botao* azul;
 Botao* lumin;
 Botao* rotaciona;
 Botao* addRect;
+Botao* addCirc;
+Botao* removObj;
+Botao* checkbox;
 std::vector<Botao*> listaBotao;
 
 int mouseX, mouseY; 
 bool pressMouse = false;
 bool pressTeclado = false;
 int direcaoTeclado = -1;
-
-
-void retanguloConfig() {
-    retangulo->desenhaRect();
-    if (retangulo->getArrast()) {
-        retangulo->drag(mouseX, mouseY);
-    }
-    if (pressTeclado) {
-        retangulo->mexer(direcaoTeclado);
-    }
-}
-
-void circleConfig() {
-    circulo->desenhaCircle();
-    if (circulo->getArrast()) {
-        circulo->drag(mouseX, mouseY);
-    }
-    if (pressTeclado) {
-        circulo->mexer(direcaoTeclado);
-    }
-}
 
 void polinomio()
 {
@@ -96,19 +76,31 @@ void configImagem() {
     imagem->desenhaHistograma(50,10, 256, 100, listaBotao);
 }
 
+void qualBotao() {
+    if (addRect->getPress()) {
+        listaObjetos.push_back(new Objetos(50 + (listaObjetos.size() * 5), 100, 50, 100, 4));
+        addRect->alterna();
+    }
+    else if (addCirc->getPress()) {
+        listaObjetos.push_back(new Objetos(250 + (listaObjetos.size() * 5), 100, 30, 4));
+        addCirc->alterna();
+    }
+    else if (removObj->getPress()) {
+        if (!listaObjetos.empty()) {
+            Objetos* ultimo = listaObjetos.back();
+            if (ultimo->getTipo() != 4 && ultimo->getTipo() != 3) {
+                delete ultimo;
+                listaObjetos.pop_back();
+                removObj->alterna();
+            }
+        }
+    }
+}
+
 void configBotao() {
     for (auto* btn : listaBotao) {
         btn->Render();
     }
-    if (addRect->getPress()) {
-        listaObjetos.push_back(new Objetos(50, 100, 50, 100, 4));
-        addRect->alterna();
-    }
-}
-
-
-void configCheckBox() {
-    checkbox->desenhaBox();
 }
 
 void desenhaObjetos() {
@@ -123,13 +115,17 @@ void desenhaObjetos() {
             }
         }
         else if (obj->getTipo() == 2) {
-            circulo->desenhaCircle();
-            if (circulo->getArrast()) {
-                circulo->drag(mouseX, mouseY);
+            obj->desenhaCircle();
+            if (obj->getArrast()) {
+                obj->drag(mouseX, mouseY);
             }
             if (pressTeclado) {
-                circulo->mexer(direcaoTeclado);
+                obj->mexer(direcaoTeclado);
             }
+        }
+        else if (obj->getTipo() == 3) {
+            imagem->editImagem(slid->normaCirc(), mouseX, mouseY, rotaciona);
+            imagem->desenhaHistograma(50, 10, 256, 100, listaBotao);
         }
     }
 }
@@ -142,12 +138,9 @@ void render()
    CV::clear(1, 1, 1);
 
    //polinomio();
-   //retanguloConfig();
-   //circleConfig();
    desenhaObjetos();
    sliderConfig();
-   configImagem();
-   configCheckBox();
+   //configImagem();
    configBotao();
    
    Sleep(10); //limitador FPS
@@ -208,13 +201,12 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
    }
    if (state == 1) {
        pressMouse = false;
-
        for (auto* btn : listaBotao) {
            if (btn->hitClick(mouseX,mouseY)) {
                btn->alterna();
+               qualBotao();
            }
        }
-
        for (auto* obj : listaObjetos) {
            obj->soltaArrast();
            if (obj->checaSelec(mouseX,mouseY)) {
@@ -234,30 +226,28 @@ int main(void)
 {
    
    slid = new Slider(30, 220, 30, 10, 0, 0);
-   retangulo = new Objetos(50, 100, 50, 100, 4);
-   circulo = new Objetos( 250, 100, 30, 4);
    imagem = new Objetos(arquivo);
-   checkbox = new Objetos(30, 30);
-   listaObjetos.push_back(checkbox);
    listaObjetos.push_back(slid->getCirc());
-   listaObjetos.push_back(retangulo);
-   listaObjetos.push_back(circulo);
    listaObjetos.push_back(imagem);
-
    //------------------------------------------------------
-   vermelho = new Botao(100, 400, 80, 30, "Vermelho", 2);
+   vermelho = new Botao(100, 400, 85, 30, "Vermelho", 2);
    verde = new Botao(200, 400, 60, 30, "Verde", 3);
    azul = new Botao(300, 400, 60, 30, "Azul", 4);
    lumin = new Botao(400, 400, 60, 30, "Lumin", 0);
-   rotaciona = new Botao(10, 400, 60, 30, "Rot 90", 0);
+   rotaciona = new Botao(10, 400, 70, 30, "Rot 90º", 0);
    addRect = new Botao(100, 600, 90, 30, "ADD rect", 0);
+   addCirc = new Botao(100, 500, 90, 30, "ADD circ", 0);
+   removObj = new Botao(300, 600, 135, 30, "Remove Objeto", 0);
+   checkbox = new Botao(30,30, 10, 10, "box");
+   listaBotao.push_back(checkbox);
    listaBotao.push_back(vermelho);
    listaBotao.push_back(verde);
    listaBotao.push_back(azul);
    listaBotao.push_back(lumin);
    listaBotao.push_back(rotaciona);
    listaBotao.push_back(addRect);
-
+   listaBotao.push_back(addCirc);
+   listaBotao.push_back(removObj);
    CV::init(&screenWidth, &screenHeight, "Demo Robson");
    CV::run();
 }
