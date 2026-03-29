@@ -96,6 +96,10 @@ public:
         return tipo;
     }
 
+    bool getSelecao() {
+        return selecao;
+    }
+
     void soltaArrast() {
         arrastar = false;
     }
@@ -148,8 +152,18 @@ public:
             }
             
         }
-        width = escala * imagem->getWidth();
-        height = escala * imagem->getHeight();
+        if (selecao) {
+            CV::color(0);
+
+            if (c == 1 || c == -1) {
+                CV::rect(x, y, x + (meioW * 2), y + (meioH * 2));
+            }
+            else {
+                float diff = (meioW - meioH);
+                CV::rect(x+diff, y-diff, x+ diff + (meioH * 2), y -diff + (meioW * 2));
+            }
+            
+        }
     }
 
     void setSelecao(bool selec) {
@@ -276,26 +290,28 @@ public:
     void desenhaRect(float escalaSlider) {
         if (selecao) {
             this->escala = escalaSlider;
-            cor = 3;
         }
-        else {
-            cor = 4;
-
-        }
+        
         float wEscala = this->width * escala;
         float hEscala = this->height * escala;
 
         CV::color(cor);
         CV::rectFill(this->x, this->y, this->x + wEscala, this->y + hEscala);
-       
 
+        if (selecao) {
+            CV::color(0);
+            CV::rect(this->x, this->y, this->x + wEscala, this->y + hEscala);
+        }
     }
 
+    void desenhaCircle() {
+        CV::color(0);
+        CV::circle(this->x, this->y, this->raio, 50);
+    }
 
     void desenhaCircle(float escalaSlider) {
         if (selecao) {
             this->escala = escalaSlider;
-            cor = 3;
         }
         else {
             cor = 4;
@@ -303,12 +319,14 @@ public:
         float rEscala = this->raio * this->escala;
         CV::color(cor);
         CV::circleFill(this->x, this->y, rEscala, 50);
+
+        if (selecao) {
+            CV::color(0); 
+            CV::circle(this->x, this->y, rEscala, 50);
+        }
     }
 
-    void desenhaCircle() {
-        CV::color(0);
-        CV::circle(this->x, this->y, this->raio, 50);
-    }
+    
 
     void setArrast(int mouseX, int mouseY) {
         distX = mouseX - x;
@@ -374,7 +392,7 @@ public:
     }
 
     bool checaSelec(int mouseX, int mouseY) {
-        if (tipo == 1 || tipo == 5 || tipo == 4) {
+        if (tipo == 1 || tipo == 4 || tipo == 5) {
             return checaSelecaoRect(mouseX, mouseY);
         }
         else if (tipo == 2 || tipo == 3) {

@@ -30,7 +30,16 @@ class Slider {
     Objetos* circ;
 public:
     Slider(float initX, float initY, float width, float height, int sentido, int _tipo) {
-        circ = new Objetos(initX+width/2, initY+height/2, height);
+        float meioHorizontal = initX + (width * MAX) / 2.0f;
+        float meioVertical = initY + (height * MAX) / 2.0f;
+
+        if (sentido) {
+            circ = new Objetos(initX + width / 2, meioVertical, height);
+        }
+        else {
+            circ = new Objetos(meioHorizontal, initY + height / 2, height);
+        }
+        
         sliderX = initX;
         sliderY = initY;
         sliderW = width;

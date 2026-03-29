@@ -27,7 +27,7 @@
 //largura e altura inicial da tela . Alteram com o redimensionamento de tela.
 int screenWidth = 800, screenHeight = 800;
 
-char arquivo[] = { "gremio.bmp" };
+char arquivo[] = { "tank.bmp" };
 Slider* slid;
 Objetos* sliderChoice;
 Objetos* imagem;
@@ -86,7 +86,10 @@ void qualBotao() {
         addCirc->alterna();
     }
     else if (rotaciona->getPress()) {
-        imagem->rotacionar(-90);//- para sentido horario e + para sentido anti horario
+        if (imagem->getSelecao()) {
+            imagem->rotacionar(-90);//- para sentido horario e + para sentido anti horario
+        }
+       
         rotaciona->alterna();
     }
     else if (removObj->getPress()) {
