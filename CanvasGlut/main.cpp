@@ -1,6 +1,20 @@
 /*********************************************************************
 // Canvas
 // Autor: Robson Daniel Marchesan
+// Botões:
+/* Load Imagem = Carrega a imagem configurada na string arquivo
+*  Add Circ = Adiciona Circulo preenchido
+*  Add Rect = Adiciona Retangulo preenchido
+*  Remove Objeto = Remove o ultimo objeto adicionado ou carregado no caso da imagem
+*  Rot 90 = Rotaciona a imagem ou retangulo em 90º no sentido horário
+*  Lumin = Mostra o no histograma o grafico da luminancia
+*  Vermelho, Verde ou Azul = mostra o grafico da sua respectiva cor no histograma
+*  CheckBox(cinza) = Coloca a imagem no tom cinza
+*  Slider = Manipula a escala da imagem ou figura selecionada, podendo ser usado para redimensionar a mesma
+*  Obs: Tudo que for para alterar ou manipular os objetos precisa que voce clique na imagem antes de usar cada vez que for usar senão nao fará nada
+*  A seleção funciona com um clique simples do botao esquerdo do mouse em cima da figura/imagem. Quando selecionado o objeto mostrará um contorno
+* 
+*/
 // *********************************************************************/
 
 #include <GL/glut.h>
@@ -65,6 +79,33 @@ void polinomio()
     CV::translate(0,0);
 }
 
+void setInicio() {
+    slid = new Slider(500, 650, 20, 10, 0, 0);
+    imagem = new Objetos(arquivo);
+    listaObjetos.push_back(slid->getCirc());
+    //------------------------------------------------------
+    loadImagem = new Botao(50, 750, 90, 30, "Load Img", 0);
+    addCirc = new Botao(50, 700, 90, 30, "ADD Circ", 0);
+    addRect = new Botao(50, 650, 90, 30, "ADD Rect", 0);
+    removObj = new Botao(200, 750, 135, 30, "Remove Objeto", 0);
+    rotaciona = new Botao(200, 700, 70, 30, "Rot 90º", 0);
+    lumin = new Botao(200, 650, 60, 30, "Lumin", 0);
+    vermelho = new Botao(350, 750, 85, 30, "Vermelho", 2);
+    verde = new Botao(350, 700, 60, 30, "Verde", 3);
+    azul = new Botao(350, 650, 60, 30, "Azul", 4);
+    checkbox = new Botao(450, 650, 10, 10, "Cinza");
+    listaBotao.push_back(checkbox);
+    listaBotao.push_back(vermelho);
+    listaBotao.push_back(verde);
+    listaBotao.push_back(azul);
+    listaBotao.push_back(lumin);
+    listaBotao.push_back(rotaciona);
+    listaBotao.push_back(addRect);
+    listaBotao.push_back(addCirc);
+    listaBotao.push_back(removObj);
+    listaBotao.push_back(loadImagem);
+}
+
 void qualBotao() {
     if (addRect->getPress()) {
         listaObjetos.push_back(new Objetos(50 + (listaObjetos.size() * 5), 100, 50, 100, 5));
@@ -94,6 +135,30 @@ void qualBotao() {
                 listaObjetos.pop_back();
                 removObj->alterna();
             }
+        }
+    }
+}
+
+void testArrasto() {
+    if (!Objetos::checaListaArrasto(listaObjetos)) {
+        Objetos::checaListaColisao(mouseX, mouseY, listaObjetos);
+    }
+}
+
+void testSelecao() {
+    for (auto* btn : listaBotao) {
+        if (btn->hitClick(mouseX, mouseY)) {
+            btn->alterna();
+            qualBotao();
+        }
+    }
+    for (auto* obj : listaObjetos) {
+        obj->soltaArrast();
+        if (obj->checaSelec(mouseX, mouseY)) {
+            obj->setSelecao(true);
+        }
+        else {
+            obj->setSelecao(false);
         }
     }
 }
@@ -148,12 +213,8 @@ void render()
    CV::clear(1, 1, 1);
    CV::color(11);
    CV::rectFill(0, 600, screenWidth, screenHeight);//fundo dos botoes
-   //polinomio();
-   //sliderConfig();
    desenhaBotoes();
    desenhaObjetos();
-   
-   
    
    Sleep(10); //limitador FPS
 }
@@ -206,62 +267,19 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
    //printf("\n COORDENADAS MOUSE-> X: %d Y: %d", mouseX, mouseY);
    if (state == 0) {
        pressMouse = true;
-       if (!Objetos::checaListaArrasto(listaObjetos)) {
-           Objetos::checaListaColisao(mouseX, mouseY, listaObjetos);
-       }
-
+       testArrasto();
    }
    if (state == 1) {
        pressMouse = false;
-       for (auto* btn : listaBotao) {
-           if (btn->hitClick(mouseX,mouseY)) {
-               btn->alterna();
-               qualBotao();
-           }
-       }
-       for (auto* obj : listaObjetos) {
-           obj->soltaArrast();
-           if (obj->checaSelec(mouseX,mouseY)) {
-               obj->setSelecao(true);
-           }
-           else {
-               obj->setSelecao(false);
-           }
-       }
+       testSelecao();
    }
 
 
 }
 
 
-int main(void)
-{
-   
-   slid = new Slider(500, 650, 20, 10, 0, 0);
-   imagem = new Objetos(arquivo);
-   listaObjetos.push_back(slid->getCirc());
-   //------------------------------------------------------
-   loadImagem = new Botao(50, 750, 90, 30, "Load Img", 0);
-   addCirc = new Botao(50, 700, 90, 30, "ADD Circ", 0);
-   addRect = new Botao(50, 650, 90, 30, "ADD Rect", 0);
-   removObj = new Botao(200, 750, 135, 30, "Remove Objeto", 0);
-   rotaciona = new Botao(200, 700, 70, 30, "Rot 90º", 0);
-   lumin = new Botao(200, 650, 60, 30, "Lumin", 0);
-   vermelho = new Botao(350, 750, 85, 30, "Vermelho", 2);
-   verde = new Botao(350, 700, 60, 30, "Verde", 3);
-   azul = new Botao(350, 650, 60, 30, "Azul", 4);
-   checkbox = new Botao(450,650, 10, 10, "Cinza");
-   listaBotao.push_back(checkbox);
-   listaBotao.push_back(vermelho);
-   listaBotao.push_back(verde);
-   listaBotao.push_back(azul);
-   listaBotao.push_back(lumin);
-   listaBotao.push_back(rotaciona);
-   listaBotao.push_back(addRect);
-   listaBotao.push_back(addCirc);
-   listaBotao.push_back(removObj);
-   listaBotao.push_back(loadImagem);
-
-   CV::init(&screenWidth, &screenHeight, "Demo Robson");
-   CV::run();
+int main(void){
+    setInicio();
+    CV::init(&screenWidth, &screenHeight, "Demo Robson");
+    CV::run();
 }
