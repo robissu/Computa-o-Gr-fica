@@ -70,26 +70,22 @@ void sliderConfig() {
     //slid->retanguloDegrade(slid->normaCirc());
 }
 
-void configImagem() {
-    float escala = slid->normaCirc();
-    imagem->editImagem(escala, mouseX, mouseY);
-    imagem->desenhaHistograma(50,10, 256, 100, listaBotao);
-}
 
 void qualBotao() {
     if (addRect->getPress()) {
-        listaObjetos.push_back(new Objetos(50 + (listaObjetos.size() * 5), 100, 50, 100, 4));
+        listaObjetos.push_back(new Objetos(50 + (listaObjetos.size() * 5), 100, 50, 100, 5));
         addRect->alterna();
     }
     else if (addCirc->getPress()) {
-        listaObjetos.push_back(new Objetos(250 + (listaObjetos.size() * 5), 100, 30, 4));
+        listaObjetos.push_back(new Objetos(250 + (listaObjetos.size() * 5), 100, 30, 5));
         addCirc->alterna();
     }
     else if (rotaciona->getPress()) {
-        if (imagem->getSelecao()) {
-            imagem->rotacionar(-90);//- para sentido horario e + para sentido anti horario
+        for (auto* obj : listaObjetos) {
+            if (obj->getSelecao()) {
+                obj->rotacionar(-90);//- para sentido horario e + para sentido anti horario
+            }
         }
-       
         rotaciona->alterna();
     }
     else if (removObj->getPress()) {
@@ -133,7 +129,7 @@ void desenhaObjetos() {
             }
         }
         else if (obj->getTipo() == 4) {
-            imagem->editImagem(slid->normaCirc(), mouseX, mouseY);
+            imagem->editImagem(slid->normaCirc(), mouseX, mouseY, checkbox->getPress());
             imagem->desenhaHistograma(50, 10, 256, 100, listaBotao);
             if (pressTeclado) {
                 obj->mexer(direcaoTeclado);
@@ -152,7 +148,6 @@ void render()
    //polinomio();
    desenhaObjetos();
    sliderConfig();
-   //configImagem();
    configBotao();
    
    Sleep(10); //limitador FPS
@@ -237,7 +232,7 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
 int main(void)
 {
    
-   slid = new Slider(30, 220, 30, 10, 0, 1);
+   slid = new Slider(30, 220, 30, 10, 1, 0);
    imagem = new Objetos(arquivo);
    listaObjetos.push_back(slid->getCirc());
    listaObjetos.push_back(imagem);
@@ -250,12 +245,14 @@ int main(void)
    addRect = new Botao(100, 600, 90, 30, "ADD rect", 0);
    addCirc = new Botao(100, 500, 90, 30, "ADD circ", 0);
    removObj = new Botao(300, 600, 135, 30, "Remove Objeto", 0);
-   checkbox = new Botao(30,30, 10, 10, "box");
+   checkbox = new Botao(30,30, 10, 10, "Cinza");
+   
    listaBotao.push_back(checkbox);
    listaBotao.push_back(vermelho);
    listaBotao.push_back(verde);
    listaBotao.push_back(azul);
    listaBotao.push_back(lumin);
+
    listaBotao.push_back(rotaciona);
    listaBotao.push_back(addRect);
    listaBotao.push_back(addCirc);

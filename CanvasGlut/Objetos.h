@@ -11,7 +11,6 @@ class Objetos {
     bool arrastar, selecao;
     Bmp *imagem;
     unsigned char* data;
-    
 public:
     Objetos(float x, float y, float width, float height, int cor){//retangulo tipo 1
         this->tipo = 1;
@@ -68,6 +67,9 @@ public:
         return arrastar;
     }
 
+    void setCor(int _cor) {
+        this->cor = _cor;
+    }
     unsigned char* getData(){
         return data;
     }
@@ -100,6 +102,10 @@ public:
         return selecao;
     }
 
+    int getCor() {
+        return cor;
+    }
+
     void soltaArrast() {
         arrastar = false;
     }
@@ -108,7 +114,7 @@ public:
         angulo += graus * (3.14159f / 180.0f);
     }
 
-    void editImagem(float escalaSlider, int mouseX, int mouseY) {
+    void editImagem(float escalaSlider, int mouseX, int mouseY, bool cinza) {
         if (arrastar) {
             x = mouseX - distX;
             y = mouseY - distY;
@@ -128,16 +134,14 @@ public:
             for (int idxX = 0; idxX < imagem->getWidth(); idxX++) {
                 int idx = idxY * imagem->getBytes() + idxX * 3;
 
-                if (!arrastar) {
-                    CV::color(data[idx] / 255.0, data[idx + 1] / 255.0, data[idx + 2] / 255.0);
-                }
-                    
-                else {
+                if (cinza) {
                     float y = data[idx] * 0.3 + data[idx + 1] * 0.5 + data[idx + 2] * 0.2;//cinza
-
-                    CV::color(y / 255.0 , y / 255.0, y / 255.0);
-                    //CV::color(0, 0 ,y/ 255.0);
+                    CV::color(y / 255.0, y / 255.0, y / 255.0);
                 }
+                else {
+                    CV::color(data[idx] / 255.0, data[idx + 1] / 255.0, data[idx + 2] / 255.0);//cor normal
+                }
+
 
                 //valor escala entre 0 e 1,
                 int dimX = idxX * escala;
@@ -295,12 +299,27 @@ public:
         float wEscala = this->width * escala;
         float hEscala = this->height * escala;
 
-        CV::color(cor);
-        CV::rectFill(this->x, this->y, this->x + wEscala, this->y + hEscala);
+        float c = cosf(angulo);
 
-        if (selecao) {
-            CV::color(0);
-            CV::rect(this->x, this->y, this->x + wEscala, this->y + hEscala);
+        float meioW = wEscala/ 2.0f;
+        float meioH = hEscala/ 2.0f;
+
+        CV::color(cor);
+
+        if (c == 1 || c == -1) {
+            CV::rectFill(this->x, this->y, this->x + wEscala, this->y + hEscala);
+            if (selecao) {
+                CV::color(0);
+                CV::rect(this->x, this->y, this->x + wEscala, this->y + hEscala);
+            }
+        }
+        else {
+            float diff = (meioW - meioH);
+            CV::rectFill(x+ diff, y + diff, x + diff + hEscala, y + diff + wEscala);
+            if (selecao) {
+                CV::color(0);
+                CV::rect(x + diff, y + diff, x + diff + hEscala, y + diff + wEscala);
+            }
         }
     }
 
@@ -361,8 +380,23 @@ public:
     bool rectBorda(int mouseX, int mouseY) {
         float wAtual = this->width * this->escala;
         float hAtual = this->height * this->escala;
-        return (mouseX >= x && mouseX <= x + wAtual
-            && mouseY >= y && mouseY <= y + hAtual);
+        float c = cosf(angulo);
+        if ( c == 1 || c == -1) {
+            return (mouseX >= x && mouseX <= x + wAtual
+                && mouseY >= y && mouseY <= y + hAtual);
+        }
+        else {
+            float meioW = wAtual / 2.0f;
+            float meioH = hAtual / 2.0f;
+            float diff = (meioW - meioH);
+            float x1 = x + diff;
+            float y1 = y + diff;
+            float x2 = x + diff + hAtual; 
+            float y2 = y + diff + wAtual;
+            return (mouseX >= x1 && mouseX <= x2
+                && mouseY >= y1 && mouseY <= y2);
+        }
+        
     }
 
     bool circBorda(int mouseX, int mouseY) {
