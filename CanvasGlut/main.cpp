@@ -147,7 +147,7 @@ void render()
 {
    CV::clear(1, 1, 1);
    CV::color(11);
-   CV::rectFill(0, 600, screenWidth, 800);
+   CV::rectFill(0, 600, screenWidth, screenHeight);//fundo dos botoes
    //polinomio();
    //sliderConfig();
    desenhaBotoes();
