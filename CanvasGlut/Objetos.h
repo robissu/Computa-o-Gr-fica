@@ -332,9 +332,7 @@ public:
         if (selecao) {
             this->escala = escalaSlider;
         }
-        else {
-            cor = 4;
-        }
+ 
         float rEscala = this->raio * this->escala;
         CV::color(cor);
         CV::circleFill(this->x, this->y, rEscala, 50);

@@ -42,6 +42,7 @@ Botao* addRect;
 Botao* addCirc;
 Botao* removObj;
 Botao* checkbox;
+Botao* loadImagem;
 std::vector<Botao*> listaBotao;
 
 int mouseX, mouseY; 
@@ -64,13 +65,6 @@ void polinomio()
     CV::translate(0,0);
 }
 
-void sliderConfig() {
-    slid->barraDeslize();
-    slid->circSeleciona(mouseX,mouseY, pressMouse, listaObjetos);
-    //slid->retanguloDegrade(slid->normaCirc());
-}
-
-
 void qualBotao() {
     if (addRect->getPress()) {
         listaObjetos.push_back(new Objetos(50 + (listaObjetos.size() * 5), 100, 50, 100, 5));
@@ -79,6 +73,10 @@ void qualBotao() {
     else if (addCirc->getPress()) {
         listaObjetos.push_back(new Objetos(250 + (listaObjetos.size() * 5), 100, 30, 5));
         addCirc->alterna();
+    }
+    else if (loadImagem->getPress()) {
+        listaObjetos.push_back(imagem);
+        loadImagem->alterna();
     }
     else if (rotaciona->getPress()) {
         for (auto* obj : listaObjetos) {
@@ -91,8 +89,8 @@ void qualBotao() {
     else if (removObj->getPress()) {
         if (!listaObjetos.empty()) {
             Objetos* ultimo = listaObjetos.back();
-            if (ultimo->getTipo() != 4 && ultimo->getTipo() != 3) {
-                delete ultimo;
+            if (ultimo->getTipo() != 3) {
+                //delete ultimo;
                 listaObjetos.pop_back();
                 removObj->alterna();
             }
@@ -100,7 +98,7 @@ void qualBotao() {
     }
 }
 
-void configBotao() {
+void desenhaBotoes() {
     for (auto* btn : listaBotao) {
         btn->Render();
     }
@@ -128,27 +126,34 @@ void desenhaObjetos() {
                 obj->mexer(direcaoTeclado);
             }
         }
+        else if (obj->getTipo() == 3) {
+            slid->barraDeslize();
+            slid->circSeleciona(mouseX, mouseY, pressMouse, listaObjetos);
+            //slid->retanguloDegrade(slid->normaCirc());
+        }
         else if (obj->getTipo() == 4) {
             imagem->editImagem(slid->normaCirc(), mouseX, mouseY, checkbox->getPress());
-            imagem->desenhaHistograma(50, 10, 256, 100, listaBotao);
+            imagem->desenhaHistograma(500, 680, 256, 100, listaBotao);
             if (pressTeclado) {
                 obj->mexer(direcaoTeclado);
             }
         }
     }
+    
 }
 
 //funcao chamada continuamente. Deve-se controlar o que desenhar por meio de variaveis globais
-//Todos os comandos para desenho na canvas devem ser chamados dentro da render().
-//Deve-se manter essa função com poucas linhas de codigo.
 void render()
 {
    CV::clear(1, 1, 1);
-
+   CV::color(11);
+   CV::rectFill(0, 600, screenWidth, 800);
    //polinomio();
+   //sliderConfig();
+   desenhaBotoes();
    desenhaObjetos();
-   sliderConfig();
-   configBotao();
+   
+   
    
    Sleep(10); //limitador FPS
 }
@@ -232,31 +237,31 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
 int main(void)
 {
    
-   slid = new Slider(30, 220, 30, 10, 1, 0);
+   slid = new Slider(500, 650, 20, 10, 0, 0);
    imagem = new Objetos(arquivo);
    listaObjetos.push_back(slid->getCirc());
-   listaObjetos.push_back(imagem);
    //------------------------------------------------------
-   vermelho = new Botao(100, 400, 85, 30, "Vermelho", 2);
-   verde = new Botao(200, 400, 60, 30, "Verde", 3);
-   azul = new Botao(300, 400, 60, 30, "Azul", 4);
-   lumin = new Botao(400, 400, 60, 30, "Lumin", 0);
-   rotaciona = new Botao(10, 400, 70, 30, "Rot 90º", 0);
-   addRect = new Botao(100, 600, 90, 30, "ADD rect", 0);
-   addCirc = new Botao(100, 500, 90, 30, "ADD circ", 0);
-   removObj = new Botao(300, 600, 135, 30, "Remove Objeto", 0);
-   checkbox = new Botao(30,30, 10, 10, "Cinza");
-   
+   loadImagem = new Botao(50, 750, 90, 30, "Load Img", 0);
+   addCirc = new Botao(50, 700, 90, 30, "ADD Circ", 0);
+   addRect = new Botao(50, 650, 90, 30, "ADD Rect", 0);
+   removObj = new Botao(200, 750, 135, 30, "Remove Objeto", 0);
+   rotaciona = new Botao(200, 700, 70, 30, "Rot 90º", 0);
+   lumin = new Botao(200, 650, 60, 30, "Lumin", 0);
+   vermelho = new Botao(350, 750, 85, 30, "Vermelho", 2);
+   verde = new Botao(350, 700, 60, 30, "Verde", 3);
+   azul = new Botao(350, 650, 60, 30, "Azul", 4);
+   checkbox = new Botao(450,650, 10, 10, "Cinza");
    listaBotao.push_back(checkbox);
    listaBotao.push_back(vermelho);
    listaBotao.push_back(verde);
    listaBotao.push_back(azul);
    listaBotao.push_back(lumin);
-
    listaBotao.push_back(rotaciona);
    listaBotao.push_back(addRect);
    listaBotao.push_back(addCirc);
    listaBotao.push_back(removObj);
+   listaBotao.push_back(loadImagem);
+
    CV::init(&screenWidth, &screenHeight, "Demo Robson");
    CV::run();
 }
