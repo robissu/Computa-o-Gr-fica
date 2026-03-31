@@ -21,24 +21,15 @@
     <ClCompile Include="gl_canvas2d.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
-    <ClCompile Include="Relogio.cpp">
-      <Filter>Arquivos de Origem</Filter>
-    </ClCompile>
     <ClCompile Include="bmp.cpp">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Bola.h">
-      <Filter>Arquivos de Origem</Filter>
-    </ClInclude>
     <ClInclude Include="Botao.h">
       <Filter>Arquivos de Origem</Filter>
     </ClInclude>
     <ClInclude Include="gl_canvas2d.h">
-      <Filter>Arquivos de Origem</Filter>
-    </ClInclude>
-    <ClInclude Include="Relogio.h">
       <Filter>Arquivos de Origem</Filter>
     </ClInclude>
     <ClInclude Include="Vector2.h">
@@ -55,11 +46,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="gremio.bmp">
-      <Filter>Arquivos de Origem</Filter>
-    </Image>
-    <Image Include="gremio.png">
-      <Filter>Arquivos de Origem</Filter>
+    <Image Include="gremioimpar.bmp">
+      <Filter>Arquivos de Recurso</Filter>
     </Image>
   </ItemGroup>
 </Project>

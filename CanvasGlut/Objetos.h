@@ -70,6 +70,12 @@ public:
     void setCor(int _cor) {
         this->cor = _cor;
     }
+
+    void setPos(float novoX, float novoY) {
+        this->x = novoX;
+        this->y = novoY;
+    }
+
     unsigned char* getData(){
         return data;
     }
@@ -342,8 +348,6 @@ public:
             CV::circle(this->x, this->y, rEscala, 50);
         }
     }
-
-    
 
     void setArrast(int mouseX, int mouseY) {
         distX = mouseX - x;

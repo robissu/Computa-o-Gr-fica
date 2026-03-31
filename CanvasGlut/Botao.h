@@ -35,6 +35,11 @@ public:
       tipo = 1;
   }
 
+  void setPos(float novoX, float novoY) {
+      this->x = novoX;
+      this->y = novoY;
+  }
+
   const char* getLabel() {
       return label; 
   }

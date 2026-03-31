@@ -5,7 +5,7 @@
 /* Load Imagem = Carrega a imagem configurada na string arquivo
 *  Add Circ = Adiciona Circulo preenchido
 *  Add Rect = Adiciona Retangulo preenchido
-*  Remove Objeto = Remove o ultimo objeto adicionado ou carregado no caso da imagem
+*  Remove = Remove o ultimo objeto adicionado ou carregado no caso da imagem
 *  Rot 90 = Rotaciona a imagem ou retangulo em 90º no sentido horário
 *  Lumin = Mostra o no histograma o grafico da luminancia
 *  Vermelho, Verde ou Azul = mostra o grafico da sua respectiva cor no histograma
@@ -27,8 +27,6 @@
 
 
 #include "gl_canvas2d.h"
-#include "Bola.h"
-#include "Relogio.h"
 #include "Botao.h"
 #include "Objetos.h"
 #include "Slider.h"
@@ -40,6 +38,7 @@
 
 //largura e altura inicial da tela . Alteram com o redimensionamento de tela.
 int screenWidth = 800, screenHeight = 600;
+int lastWidth = 0, lastHeight = 0;
 
 char arquivo[] = { "tank.bmp" };
 Slider* slid;
@@ -63,37 +62,55 @@ int mouseX, mouseY;
 bool pressMouse = false;
 bool pressTeclado = false;
 int direcaoTeclado = -1;
+int botWidth = 85;
+int botHeight = 30;
+int space = 50;
+int raioCirc = 30;
+int widthRect = 50;
+int heightRect = 100;
+int corObj = 5;
 
-void polinomio()
-{
-    CV::color(0);
-    CV::translate(screenWidth/2, screenHeight/2);
-    CV::line(-500, 0, 500, 0);
-    CV::line(0, -500, 0, 500);
-    float escalaX = 100, escalaY = 50;
-    for (float x = -3; x <= 3; x += 0.001)
-    {
-        float y = x * x * x - 3 * x + 2;
-        CV::point(x * escalaX, y * escalaY);
-    }
-    CV::translate(0,0);
+void ajustarLayout() {
+    int margemEsquerda = 50;
+    int col2 = margemEsquerda + (space * 3); // ~200
+    int col3 = margemEsquerda + (space * 6); // ~350
+    int col4 = margemEsquerda + (space * 9); // ~500
+
+    slid->setPos(margemEsquerda, screenHeight - (space * 3.75));
+
+    loadImagem->setPos(margemEsquerda, screenHeight - space);
+    addCirc->setPos(margemEsquerda, screenHeight - (space * 2));
+    addRect->setPos(margemEsquerda, screenHeight - (space * 3));
+
+    removObj->setPos(col2, screenHeight - space);
+    rotaciona->setPos(col2, screenHeight - (space * 2));
+    lumin->setPos(col2, screenHeight - (space * 3));
+
+    vermelho->setPos(col3, screenHeight - space);
+    verde->setPos(col3, screenHeight - (space * 2));
+    azul->setPos(col3, screenHeight - (space * 3));
+
+    checkbox->setPos(col4, screenHeight - space);
 }
 
 void setInicio() {
-    slid = new Slider(500, screenHeight - 150, 20, 10, 0, 0);
+    slid = new Slider(screenWidth - (space*15), screenHeight - (space*3.75), 20, 10, 0, 0);
     imagem = new Objetos(arquivo);
     listaObjetos.push_back(slid->getCirc());
     //------------------------------------------------------
-    loadImagem = new Botao(50, screenHeight - 50, 90, 30, "Load Img", 0);
-    addCirc = new Botao(50, screenHeight - 100, 90, 30, "ADD Circ", 0);
-    addRect = new Botao(50, screenHeight - 150, 90, 30, "ADD Rect", 0);
-    removObj = new Botao(200, screenHeight - 50, 135, 30, "Remove Objeto", 0);
-    rotaciona = new Botao(200, screenHeight - 100, 70, 30, "Rot 90º", 0);
-    lumin = new Botao(200, screenHeight - 150, 60, 30, "Lumin", 0);
-    vermelho = new Botao(350, screenHeight - 50, 85, 30, "Vermelho", 2);
-    verde = new Botao(350, screenHeight - 100, 60, 30, "Verde", 3);
-    azul = new Botao(350, screenHeight - 150, 60, 30, "Azul", 4);
-    checkbox = new Botao(450, screenHeight - 100, 10, 10, "Cinza");
+    loadImagem = new Botao(screenWidth - (space * 15), screenHeight - space, botWidth, botHeight, "Load Img", 0);
+    addCirc = new Botao(screenWidth - (space * 15), screenHeight - (space*2), botWidth, botHeight, "ADD Circ", 0);
+    addRect = new Botao(screenWidth - (space * 15), screenHeight - (space * 3), botWidth, botHeight, "ADD Rect", 0);
+
+    removObj = new Botao(screenWidth - (space * 12), screenHeight - space, botWidth, botHeight, "Remove", 0);
+    rotaciona = new Botao(screenWidth - (space * 12), screenHeight - (space * 2), botWidth, botHeight, "Rot 90º", 0);
+    lumin = new Botao(screenWidth - (space * 12), screenHeight - (space * 3), botWidth, botHeight, "Lumin", 0);
+
+    vermelho = new Botao(screenWidth - (space * 9), screenHeight - space, botWidth, botHeight, "Vermelho", 2);
+    verde = new Botao(screenWidth - (space * 9), screenHeight - (space * 2), botWidth, botHeight, "Verde", 3);
+    azul = new Botao(screenWidth - (space * 9), screenHeight - (space * 3), botWidth, botHeight, "Azul", 4);
+
+    checkbox = new Botao(screenWidth - (space * 6), screenHeight - space, 10, 10, "Cinza");
     listaBotao.push_back(checkbox);
     listaBotao.push_back(vermelho);
     listaBotao.push_back(verde);
@@ -108,11 +125,11 @@ void setInicio() {
 
 void qualBotao() {
     if (addRect->getPress()) {
-        listaObjetos.push_back(new Objetos(50 + (listaObjetos.size() * 5), 100, 50, 100, 5));
+        listaObjetos.push_back(new Objetos(screenWidth/2 + (listaObjetos.size() * 5), screenHeight/2, widthRect, heightRect, corObj));
         addRect->alterna();
     }
     else if (addCirc->getPress()) {
-        listaObjetos.push_back(new Objetos(250 + (listaObjetos.size() * 5), 100, 30, 5));
+        listaObjetos.push_back(new Objetos(screenWidth / 2 + (listaObjetos.size() * 5), screenHeight / 2, raioCirc, corObj));
         addCirc->alterna();
     }
     else if (loadImagem->getPress()) {
@@ -194,11 +211,10 @@ void desenhaObjetos() {
         else if (obj->getTipo() == 3) {
             slid->barraDeslize();
             slid->circSeleciona(mouseX, mouseY, pressMouse, listaObjetos);
-            //slid->retanguloDegrade(slid->normaCirc());
         }
         else if (obj->getTipo() == 4) {
             imagem->editImagem(slid->normaCirc(), mouseX, mouseY, checkbox->getPress());
-            imagem->desenhaHistograma(500, 680, 256, 100, listaBotao);
+            imagem->desenhaHistograma(screenWidth * 0.6, screenHeight - (space * 3.5), 256, 100, listaBotao);
             if (pressTeclado) {
                 obj->mexer(direcaoTeclado);
             }
@@ -208,17 +224,20 @@ void desenhaObjetos() {
 }
 
 //funcao chamada continuamente. Deve-se controlar o que desenhar por meio de variaveis globais
-void render()
-{
-   CV::clear(1, 1, 1);
-   CV::color(11);
-   CV::rectFill(0, 400, screenWidth, screenHeight);//fundo dos botoes
-   desenhaBotoes();
-   desenhaObjetos();
+void render(){
+    if (screenWidth != lastWidth || screenHeight != lastHeight) { //reposicionar o menu com o reshape
+        ajustarLayout();
+        lastWidth = screenWidth;
+        lastHeight = screenHeight;
+    }
+    CV::clear(1, 1, 1);
+    CV::color(11);
+    CV::rectFill(0, screenHeight - 200, screenWidth, screenHeight);//fundo dos botoes
+    desenhaBotoes();
+    desenhaObjetos();
    
-   Sleep(10); //limitador FPS
+    Sleep(10); //limitador FPS
 }
-
 
 //funcao chamada toda vez que uma tecla for pressionada.
 void keyboard(int key)
@@ -277,9 +296,8 @@ void mouse(int button, int state, int wheel, int direction, int x, int y)
 
 }
 
-
 int main(void){
     setInicio();
-    CV::init(&screenWidth, &screenHeight, "Demo Robson");
+    CV::init(&screenWidth, &screenHeight, "Trabalho 1 - Robson Daniel Marchesan");
     CV::run();
 }
