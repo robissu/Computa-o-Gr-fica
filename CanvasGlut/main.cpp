@@ -39,7 +39,7 @@
 #pragma warning(disable:4996)
 
 //largura e altura inicial da tela . Alteram com o redimensionamento de tela.
-int screenWidth = 800, screenHeight = 800;
+int screenWidth = 800, screenHeight = 600;
 
 char arquivo[] = { "tank.bmp" };
 Slider* slid;
@@ -80,7 +80,7 @@ void polinomio()
 }
 
 void setInicio() {
-    slid = new Slider(500, 650, 20, 10, 0, 0);
+    slid = new Slider(500, screenHeight - 150, 20, 10, 0, 0);
     imagem = new Objetos(arquivo);
     listaObjetos.push_back(slid->getCirc());
     //------------------------------------------------------
@@ -212,7 +212,7 @@ void render()
 {
    CV::clear(1, 1, 1);
    CV::color(11);
-   CV::rectFill(0, 600, screenWidth, screenHeight);//fundo dos botoes
+   CV::rectFill(0, 400, screenWidth, screenHeight);//fundo dos botoes
    desenhaBotoes();
    desenhaObjetos();
    
