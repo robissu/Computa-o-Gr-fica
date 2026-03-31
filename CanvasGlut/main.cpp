@@ -84,16 +84,16 @@ void setInicio() {
     imagem = new Objetos(arquivo);
     listaObjetos.push_back(slid->getCirc());
     //------------------------------------------------------
-    loadImagem = new Botao(50, 750, 90, 30, "Load Img", 0);
-    addCirc = new Botao(50, 700, 90, 30, "ADD Circ", 0);
-    addRect = new Botao(50, 650, 90, 30, "ADD Rect", 0);
-    removObj = new Botao(200, 750, 135, 30, "Remove Objeto", 0);
-    rotaciona = new Botao(200, 700, 70, 30, "Rot 90º", 0);
-    lumin = new Botao(200, 650, 60, 30, "Lumin", 0);
-    vermelho = new Botao(350, 750, 85, 30, "Vermelho", 2);
-    verde = new Botao(350, 700, 60, 30, "Verde", 3);
-    azul = new Botao(350, 650, 60, 30, "Azul", 4);
-    checkbox = new Botao(450, 650, 10, 10, "Cinza");
+    loadImagem = new Botao(50, screenHeight - 50, 90, 30, "Load Img", 0);
+    addCirc = new Botao(50, screenHeight - 100, 90, 30, "ADD Circ", 0);
+    addRect = new Botao(50, screenHeight - 150, 90, 30, "ADD Rect", 0);
+    removObj = new Botao(200, screenHeight - 50, 135, 30, "Remove Objeto", 0);
+    rotaciona = new Botao(200, screenHeight - 100, 70, 30, "Rot 90º", 0);
+    lumin = new Botao(200, screenHeight - 150, 60, 30, "Lumin", 0);
+    vermelho = new Botao(350, screenHeight - 50, 85, 30, "Vermelho", 2);
+    verde = new Botao(350, screenHeight - 100, 60, 30, "Verde", 3);
+    azul = new Botao(350, screenHeight - 150, 60, 30, "Azul", 4);
+    checkbox = new Botao(450, screenHeight - 100, 10, 10, "Cinza");
     listaBotao.push_back(checkbox);
     listaBotao.push_back(vermelho);
     listaBotao.push_back(verde);
